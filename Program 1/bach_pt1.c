@@ -22,7 +22,7 @@ const char LAST_NAME[] = "Bach";
 
 //when you type in the path, you need to add the extra \\ at the end like I have (at least for windows)
 //if you copy the path into this section, make sure to and double the \ to make \\ (for windows)
-const char FILE_PATH[] = "C:\\GithubRepos\\CS2060\\CS-2300---Olivia-Bach\\";
+const char FILE_PATH[] = "C:\\GithubRepos\\CS2060\\CS-2300---Olivia-Bach\\Program 1\\";
 
 void printName();
 void fillMatrix1(double matrix[FIRST][FIRST], double starting, double increasing);
