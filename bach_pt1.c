@@ -22,8 +22,7 @@ const char LAST_NAME[] = "Bach";
 
 //when you type in the path, you need to add the extra \\ at the end like I have (at least for windows)
 //if you copy the path into this section, make sure to and double the \ to make \\ (for windows)
-//this path is where all six files will be stored on your drive - I made a file called CS2300-Matrixes to store the six in this case
-const char FILE_PATH[] = "C:\\GithubRepos\\CS2060\\CS-2300---Olivia-Bach\\CS2300-Matrixes\\";
+const char FILE_PATH[] = "C:\\GithubRepos\\CS2060\\CS-2300---Olivia-Bach\\";
 
 void printName();
 void fillMatrix1(double matrix[FIRST][FIRST], double starting, double increasing);
@@ -91,6 +90,7 @@ int main(void) {
 
 	fillMatrix4(mat4, 10, -2);
 
+	//4x6
 	double mat5[MAT_5_R][MAT_5_C] = {
 	{0,0,0,0,0,0},
 	{0,0,0,0,0,0},
@@ -105,6 +105,7 @@ int main(void) {
 
 	fillMatrix5(mat5, -6, 1.5);
 
+	//2x4
 	double mat6[MAT_6_R][MAT_6_C] = {
 	{0,0,0,0},
 	{0,0,0,0}
@@ -144,7 +145,7 @@ void writeToFile(const char filePath[LENGTH_FILE_PATH], double matrix1[FIRST][FI
 
 	for (int i = 0; i < FIRST; i++) {
 		for (int j = 0; j < FIRST; j++) {
-			fprintf(filePtr1, "| %2.0lf |", matrix1[i][j]);
+			fprintf(filePtr1, "%2.0lf ", matrix1[i][j]);
 			if (j == FIRST - 1) {
 				fprintf(filePtr1, "\n");
 			}
@@ -158,7 +159,7 @@ void writeToFile(const char filePath[LENGTH_FILE_PATH], double matrix1[FIRST][FI
 
 	for (int i = 0; i < FIRST; i++) {
 		for (int j = 0; j < LAST; j++) {
-			fprintf(filePtr2, "| %2.0lf |", matrix2[i][j]);
+			fprintf(filePtr2, "%2.0lf ", matrix2[i][j]);
 			if (j == LAST - 1) {
 				fprintf(filePtr2, "\n");
 			}
@@ -172,7 +173,7 @@ void writeToFile(const char filePath[LENGTH_FILE_PATH], double matrix1[FIRST][FI
 
 	for (int i = 0; i < FIRST; i++) {
 		for (int j = 0; j < LAST; j++) {
-			fprintf(filePtr3, "| %2.2lf |", matrix3[i][j]);
+			fprintf(filePtr3, "%2.2lf ", matrix3[i][j]);
 			if (j == LAST - 1) {
 				fprintf(filePtr3, "\n");
 			}
@@ -186,7 +187,7 @@ void writeToFile(const char filePath[LENGTH_FILE_PATH], double matrix1[FIRST][FI
 
 	for (int i = 0; i < MAT_4_R; i++) {
 		for (int j = 0; j < MAT_4_C; j++) {
-			fprintf(filePtr4, "| %3.0lf |", matrix4[i][j]);
+			fprintf(filePtr4, "%3.0lf ", matrix4[i][j]);
 			if (j == MAT_4_C - 1) {
 				fprintf(filePtr4, "\n");
 			}
@@ -200,7 +201,7 @@ void writeToFile(const char filePath[LENGTH_FILE_PATH], double matrix1[FIRST][FI
 
 	for (int i = 0; i < MAT_5_R; i++) {
 		for (int j = 0; j < MAT_5_C; j++) {
-			fprintf(filePtr5, "| %2.2lf |", matrix5[i][j]);
+			fprintf(filePtr5, "%2.2lf ", matrix5[i][j]);
 			if (j == MAT_5_C - 1) {
 				fprintf(filePtr5, "\n");
 			}
@@ -214,7 +215,7 @@ void writeToFile(const char filePath[LENGTH_FILE_PATH], double matrix1[FIRST][FI
 
 	for (int i = 0; i < MAT_6_R; i++) {
 		for (int j = 0; j < MAT_6_C; j++) {
-			fprintf(filePtr6, "| %2.0lf |", matrix6[i][j]);
+			fprintf(filePtr6, "%2.0lf ", matrix6[i][j]);
 			if (j == MAT_6_C - 1) {
 				fprintf(filePtr6, "\n");
 			}
