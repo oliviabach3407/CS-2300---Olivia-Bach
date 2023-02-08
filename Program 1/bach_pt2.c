@@ -433,12 +433,14 @@ int main(void) {
 	return 0;
 }
 
+//I developed this function in CS2060 and copied it from my assignments from that class
 void fgetsRemoveNewLine(char* buff) {
 	if (buff[strlen(buff) - 1] == '\n') {
 		buff[strlen(buff) - 1] = '\0';
 	}
 }
 
+//I developed this function in CS2060 and copied it from my assignments from that class
 bool getValidDouble(char* input, double* validDoublePtr) {
 	char* end;
 	errno = 0;
