@@ -361,7 +361,7 @@ int main(void) {
 
 	//6x6
 	if (((strcmp(input1, mat1) == 0)) || ((strcmp(input2, mat1) == 0))) {
-		puts("Matrix 1 is 6x6 and doesn't match the dimensions of any other matrix, so it can't be added.\n");
+		puts("\nMatrix 1 is 6x6 and doesn't match the dimensions of any other matrix, so it can't be added.\n");
 	}
 
 	//6x4
@@ -384,7 +384,7 @@ int main(void) {
 		}
 
 		else {
-			printf("%s cannot be added with %s because they don't have the same dimensions.", input1, input2);
+			printf("\n%s cannot be added with %s because they don't have the same dimensions.", input1, input2);
 		}
 	}
 
@@ -408,7 +408,7 @@ int main(void) {
 		}
 
 		else {
-			printf("%s cannot be added with %s because they don't have the same dimensions.", input1, input2);
+			printf("\n%s cannot be added with %s because they don't have the same dimensions.", input1, input2);
 		}
 	}
 
@@ -432,7 +432,7 @@ int main(void) {
 		}
 
 		else {
-			printf("%s cannot be added with %s because they don't have the same dimensions.", input1, input2);
+			printf("\n%s cannot be added with %s because they don't have the same dimensions.", input1, input2);
 		}
 	}
 
@@ -456,13 +456,13 @@ int main(void) {
 		}
 
 		else {
-			printf("%s cannot be added with %s because they don't have the same dimensions.", input1, input2);
+			printf("\n%s cannot be added with %s because they don't have the same dimensions.", input1, input2);
 		}
 	}
 
 	//2x4
 	if ((strcmp(input1, mat6) == 0) || (strcmp(input2, mat6) == 0)) {
-		puts("Matrix 6 is 2x4 and doesn't match the dimensions of any other matrix, so it can't be added.\n");
+		puts("\nMatrix 6 is 2x4 and doesn't match the dimensions of any other matrix, so it can't be added.\n");
 	}
 
 	return 0;
