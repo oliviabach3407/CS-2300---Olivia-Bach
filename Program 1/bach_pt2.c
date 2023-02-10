@@ -8,6 +8,7 @@
 
 #define LENGTH_FILE_PATH 100
 #define LENGTH 100
+#define MATRIX 6
 #define FIRST 6
 #define LAST 4
 #define MAT_4_R 4
@@ -32,13 +33,41 @@ bool getValidDouble(char* input, double* validDoublePtr);
 int main(void) {
 
 	bool valid = false;
-	char input1[LENGTH];
-	char input2[LENGTH];
-	double validMatrix1 = 0;
-	double validMatrix2 = 0;
+	char input1[MATRIX] = " ";
+	char input2[MATRIX] = " ";
+	
+	char mat1[] = "Mat1";
+	char mat2[] = "Mat2";
+	char mat3[] = "Mat3";
+	char mat4[] = "Mat4";
+	char mat5[] = "Mat5";
+	char mat6[] = "Mat6";
 
-	double matrix1[10][10];
-	double matrix2[10][10];
+	double matrix1[10][10] = {
+		{0,0,0,0,0,0,0,0,0,0},
+		{0,0,0,0,0,0,0,0,0,0},
+		{0,0,0,0,0,0,0,0,0,0},
+		{0,0,0,0,0,0,0,0,0,0},
+		{0,0,0,0,0,0,0,0,0,0},
+		{0,0,0,0,0,0,0,0,0,0},
+		{0,0,0,0,0,0,0,0,0,0},
+		{0,0,0,0,0,0,0,0,0,0},
+		{0,0,0,0,0,0,0,0,0,0},
+		{0,0,0,0,0,0,0,0,0,0},
+	};
+
+	double matrix2[10][10] = {
+		{0,0,0,0,0,0,0,0,0,0},
+		{0,0,0,0,0,0,0,0,0,0},
+		{0,0,0,0,0,0,0,0,0,0},
+		{0,0,0,0,0,0,0,0,0,0},
+		{0,0,0,0,0,0,0,0,0,0},
+		{0,0,0,0,0,0,0,0,0,0},
+		{0,0,0,0,0,0,0,0,0,0},
+		{0,0,0,0,0,0,0,0,0,0},
+		{0,0,0,0,0,0,0,0,0,0},
+		{0,0,0,0,0,0,0,0,0,0},
+	};
 
 	FILE* filePtr1 = 0;
 	FILE* filePtr2 = 0;
@@ -47,15 +76,17 @@ int main(void) {
 	char fullFilePath[LENGTH_FILE_PATH];
 
 	do{
-		puts("Please choose one of the following matrices to add (enter a number): \n");
+		puts("Please choose one of the following matrices to add: \n");
 		puts("1. Mat1\n2. Mat2\n3. Mat3\n4. Mat4\n5. Mat5\n6. Mat6\n");
 		fgets(input1, LENGTH, stdin);
 		fgetsRemoveNewLine(input1);
-		valid = getValidDouble(input1, &validMatrix1);
 
-		if ((validMatrix1 < 1) || (validMatrix1 > 6)) {
-			fprintf(stderr, "%lf is not in between 1 and 6.\n", validMatrix1);
+		if (!((strcmp(input1, mat1) == 0) || (strcmp(input1, mat2) == 0) || (strcmp(input1, mat3) == 0) || (strcmp(input1, mat4) == 0) || (strcmp(input1, mat5) == 0) || (strcmp(input1, mat6) == 0))) {
+			fprintf(stderr, "%s is not a valid matrix name.\n", input1);
 			valid = false;
+		}
+		else {
+			valid = true;
 		}
 
 	} while (valid == false);
@@ -63,27 +94,30 @@ int main(void) {
 	valid = false;
 
 	do {
-		puts("Please choose one of the following matrices to add to your first matrix (enter a number): \n");
+		puts("Please choose one of the following matrices to add to your first matrix: \n");
 		puts("1. Mat1\n2. Mat2\n3. Mat3\n4. Mat4\n5. Mat5\n6. Mat6\n");
 		fgets(input2, LENGTH, stdin);
 		fgetsRemoveNewLine(input2);
-		valid = getValidDouble(input2, &validMatrix2);
 
-		if (validMatrix1 == validMatrix2) {
+		if (strcmp(input1, input2) == 0) {
 			puts("Please enter a different number than your first matrix.\n");
 			valid = false;
 		}
-
-		if ((validMatrix2 < 1) || (validMatrix2 > 6)) {
-			fprintf(stderr, "%lf is not in between 1 and 6.\n", validMatrix2);
-			valid = false;
+		else {
+			if (!((strcmp(input2, mat1) == 0) || (strcmp(input2, mat2) == 0) || (strcmp(input2, mat3) == 0) || (strcmp(input2, mat4) == 0) || (strcmp(input2, mat5) == 0) || (strcmp(input2, mat6) == 0))) {
+				fprintf(stderr, "%s is not a valid matrix name.\n", input2);
+				valid = false;
+			}
+			else {
+				valid = true;
+			}
 		}
 
 	} while (valid == false);
 
 	//reading in the values
-
-	if (validMatrix1 == 1) {
+		
+	if ((strcmp(input1, mat1) == 0)) {
 
 		matrix1[FIRST][FIRST]; 
 
@@ -102,7 +136,7 @@ int main(void) {
 
 		fclose(filePtr1);
 	}
-	else if (validMatrix1 == 2) {
+	else if ((strcmp(input1, mat2) == 0)) {
 
 		matrix1[FIRST][LAST]; 
 
@@ -121,7 +155,7 @@ int main(void) {
 
 		fclose(filePtr1);
 	}
-	else if (validMatrix1 == 3) {
+	else if ((strcmp(input1, mat3) == 0)) {
 
 		matrix1[FIRST][LAST]; 
 
@@ -140,7 +174,7 @@ int main(void) {
 
 		fclose(filePtr1);
 	}
-	else if (validMatrix1 == 4) {
+	else if ((strcmp(input1, mat4) == 0)) {
 
 		matrix1[MAT_4_R][MAT_4_C]; 
 		
@@ -159,7 +193,7 @@ int main(void) {
 
 		fclose(filePtr1);
 	}
-	else if (validMatrix1 == 5) {
+	else if ((strcmp(input1, mat5) == 0)) {
 
 		matrix1[MAT_5_R][MAT_5_C];
 
@@ -178,7 +212,7 @@ int main(void) {
 
 		fclose(filePtr1);
 	}
-	else if (validMatrix1 == 6) {
+	else if ((strcmp(input1, mat6) == 0)) {
 
 		matrix1[MAT_6_R][MAT_6_C];
 		
@@ -202,9 +236,10 @@ int main(void) {
 		puts("Not 1-6\n");
 	}
 
+
 	//onto matrix 2
 
-	if (validMatrix2 == 1) {
+	if ((strcmp(input2, mat1) == 0)) {
 
 		matrix2[FIRST][FIRST]; 
 
@@ -223,7 +258,7 @@ int main(void) {
 
 		fclose(filePtr2);
 	}
-	else if (validMatrix2 == 2) {
+	else if ((strcmp(input2, mat2) == 0)) {
 
 		matrix2[FIRST][LAST]; 
 
@@ -242,7 +277,7 @@ int main(void) {
 
 		fclose(filePtr2);
 	}
-	else if (validMatrix2 == 3) {
+	else if ((strcmp(input2, mat3) == 0)) {
 
 		matrix2[FIRST][LAST]; 
 
@@ -261,7 +296,7 @@ int main(void) {
 
 		fclose(filePtr2);
 	}
-	else if (validMatrix2 == 4) {
+	else if ((strcmp(input2, mat4) == 0)) {
 
 		matrix2[MAT_4_R][MAT_4_C]; 
 
@@ -280,7 +315,7 @@ int main(void) {
 
 		fclose(filePtr2);
 	}
-	else if (validMatrix2 == 5) {
+	else if ((strcmp(input2, mat5) == 0)) {
 
 		matrix2[MAT_5_R][MAT_5_C];
 
@@ -299,7 +334,7 @@ int main(void) {
 
 		fclose(filePtr2);
 	}
-	else if (validMatrix2 == 6) {
+	else if ((strcmp(input2, mat6) == 0)) {
 
 		matrix2[MAT_6_R][MAT_6_C]; 
 
@@ -325,14 +360,14 @@ int main(void) {
 	//doing the addition
 
 	//6x6
-	if (validMatrix1 == 1 || validMatrix2 == 1) {
+	if (((strcmp(input1, mat1) == 0)) || ((strcmp(input2, mat1) == 0))) {
 		puts("Matrix 1 is 6x6 and doesn't match the dimensions of any other matrix, so it can't be added.\n");
 	}
 
 	//6x4
-	if (validMatrix1 == 2) {
+	if ((strcmp(input1, mat2) == 0)) {
 		//6x4
-		if (validMatrix2 == 3) {
+		if ((strcmp(input2, mat3) == 0)) {
 			sprintf(fullFilePath, "%sobach_pt2_23", FILE_PATH);
 			filePtr3 = fopen(fullFilePath, "w");
 
@@ -349,14 +384,14 @@ int main(void) {
 		}
 
 		else {
-			printf("Mat%.0lf cannot be added with Mat%.0lf because they don't have the same dimensions.", validMatrix2, validMatrix1);
+			printf("%s cannot be added with %s because they don't have the same dimensions.", input1, input2);
 		}
 	}
 
 	//6x4
-	if (validMatrix1 == 3) {
+	if ((strcmp(input1, mat3) == 0)) {
 		//6x4
-		if (validMatrix2 == 2) {
+		if ((strcmp(input2, mat2) == 0)) {
 			sprintf(fullFilePath, "%sobach_pt2_32", FILE_PATH);
 			filePtr3 = fopen(fullFilePath, "w");
 
@@ -373,14 +408,14 @@ int main(void) {
 		}
 
 		else {
-			printf("Mat%.0lf cannot be added with Mat%.0lf because they don't have the same dimensions.", validMatrix2, validMatrix1);
+			printf("%s cannot be added with %s because they don't have the same dimensions.", input1, input2);
 		}
 	}
 
 	//4x6
-	if (validMatrix1 == 4) {
+	if ((strcmp(input1, mat4) == 0)) {
 		//4x6
-		if (validMatrix2 == 5) {
+		if ((strcmp(input2, mat5) == 0)) {
 			sprintf(fullFilePath, "%sobach_pt2_45", FILE_PATH);
 			filePtr3 = fopen(fullFilePath, "w");
 
@@ -397,14 +432,14 @@ int main(void) {
 		}
 
 		else {
-			printf("Mat%.0lf cannot be added with Mat%.0lf because they don't have the same dimensions.", validMatrix2, validMatrix1);
+			printf("%s cannot be added with %s because they don't have the same dimensions.", input1, input2);
 		}
 	}
 
 	//4x6
-	if (validMatrix1 == 5) {
+	if ((strcmp(input1, mat5) == 0)) {
 		//4x6
-		if (validMatrix2 == 4) {
+		if ((strcmp(input2, mat4) == 0)) {
 			sprintf(fullFilePath, "%sobach_pt2_54", FILE_PATH);
 			filePtr3 = fopen(fullFilePath, "w");
 
@@ -421,12 +456,12 @@ int main(void) {
 		}
 
 		else {
-			printf("Mat%.0lf cannot be added with Mat%.0lf because they don't have the same dimensions.", validMatrix2, validMatrix1);
+			printf("%s cannot be added with %s because they don't have the same dimensions.", input1, input2);
 		}
 	}
 
 	//2x4
-	if (validMatrix1 == 6) {
+	if ((strcmp(input1, mat6) == 0) || (strcmp(input2, mat6) == 0)) {
 		puts("Matrix 6 is 2x4 and doesn't match the dimensions of any other matrix, so it can't be added.\n");
 	}
 
