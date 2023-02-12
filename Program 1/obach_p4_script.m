@@ -14,9 +14,21 @@ M = [-1 -3  2  3  1;
 
 plot(M);
 
-rs = dot(r,s);
-uv = dot(u,v);
-sv = dot(s,v);
+rs = 0;
+uv = 0;
+sv = 0;
+
+for i = 1:2
+    rs = rs + r(i)*s(i);
+end
+
+for i = 1:2
+    uv = uv + u(i)*v(i);
+end
+
+for i = 1:2
+    sv = sv + s(i)*v(i);
+end
 
 fileID = fopen('obach_p4_rs.txt','w');
 fprintf(fileID,'%d', rs);
