@@ -69,6 +69,19 @@ int main(void) {
 		{0,0,0,0,0,0,0,0,0,0},
 	};
 
+	double matrix3[10][10] = {
+		{0,0,0,0,0,0,0,0,0,0},
+		{0,0,0,0,0,0,0,0,0,0},
+		{0,0,0,0,0,0,0,0,0,0},
+		{0,0,0,0,0,0,0,0,0,0},
+		{0,0,0,0,0,0,0,0,0,0},
+		{0,0,0,0,0,0,0,0,0,0},
+		{0,0,0,0,0,0,0,0,0,0},
+		{0,0,0,0,0,0,0,0,0,0},
+		{0,0,0,0,0,0,0,0,0,0},
+		{0,0,0,0,0,0,0,0,0,0},
+	};
+
 	FILE* filePtr1 = 0;
 	FILE* filePtr2 = 0;
 
@@ -359,6 +372,8 @@ int main(void) {
 
 	//doing the multiplication 
 
+	double total = 0;
+
 	//6x6
 	if (((strcmp(input1, mat1) == 0))) {
 		//6x4
@@ -366,13 +381,25 @@ int main(void) {
 			sprintf(fullFilePath, "%sobach_pt3_12", FILE_PATH);
 			filePtr3 = fopen(fullFilePath, "w");
 
-			for (int i = 0; i < FIRST; i++) {
-				for (int j = 0; j < FIRST; j++) {
-					fprintf(filePtr3, "%3.2lf ", (matrix1[i][j] * matrix2[j][i]));  //flipped j and i for second variable
-					if (j == FIRST - 1) {
-						fprintf(filePtr3, "\n");
+			for (int i = 0; i < FIRST; i++) { //num rows for matrix 1
+				for (int j = 0; j < LAST; j++) { //num columns for matrix 2
+					for (int k = 0; k < FIRST; k++) { //num rows for matrix 2
+						total = total + (matrix1[i][k] * matrix2[k][j]);
+						matrix3[i][j] = total;
 					}
+					total = 0;
 				}
+			}
+
+			//6x4
+			for (int i = 0; i < FIRST; i++) {
+				for (int j = 0; j < LAST; j++) {
+
+					fprintf(filePtr3, "%3.2lf ", matrix3[i][j]);
+
+				}
+
+				fprintf(filePtr3, "\n");
 			}
 
 			fclose(filePtr3);
@@ -382,17 +409,28 @@ int main(void) {
 			sprintf(fullFilePath, "%sobach_pt3_13", FILE_PATH);
 			filePtr3 = fopen(fullFilePath, "w");
 
-			for (int i = 0; i < FIRST; i++) {
-				for (int j = 0; j < FIRST; j++) {
-					fprintf(filePtr3, "%3.2lf ", (matrix1[i][j] * matrix2[j][i]));  //flipped j and i for second variable
-					if (j == FIRST - 1) {
-						fprintf(filePtr3, "\n");
+			for (int i = 0; i < FIRST; i++) { //num rows for matrix 1
+				for (int j = 0; j < LAST; j++) { //num columns for matrix 2
+					for (int k = 0; k < FIRST; k++) { //num rows for matrix 2
+						total = total + (matrix1[i][k] * matrix2[k][j]);
+						matrix3[i][j] = total;
 					}
+					total = 0;
 				}
 			}
 
-			fclose(filePtr3);
+			//6x4
+			for (int i = 0; i < FIRST; i++) {
+				for (int j = 0; j < LAST; j++) {
 
+					fprintf(filePtr3, "%3.2lf ", matrix3[i][j]);
+
+				}
+
+				fprintf(filePtr3, "\n");
+			}
+
+			fclose(filePtr3);
 		}
 		else {
 			printf("\n%s cannot be multiplied with %s.", input1, input2);
@@ -407,28 +445,54 @@ int main(void) {
 			sprintf(fullFilePath, "%sobach_pt3_24", FILE_PATH);
 			filePtr3 = fopen(fullFilePath, "w");
 
-			for (int i = 0; i < FIRST; i++) {
-				for (int j = 0; j < LAST; j++) {
-					fprintf(filePtr3, "%3.2lf ", (matrix1[i][j] + matrix2[j][i]));
-					if (j == LAST - 1) {
-						fprintf(filePtr3, "\n");
+			for (int i = 0; i < FIRST; i++) { //num rows for matrix 1
+				for (int j = 0; j < MAT_4_C; j++) { //num columns for matrix 2
+					for (int k = 0; k < MAT_4_R; k++) { //num rows for matrix 2
+						total = total + (matrix1[i][k] * matrix2[k][j]);
+						matrix3[i][j] = total;
 					}
+					total = 0;
 				}
+			}
+
+			//6x6
+			for (int i = 0; i < FIRST; i++) {
+				for (int j = 0; j < FIRST; j++) {
+
+					fprintf(filePtr3, "%3.2lf ", matrix3[i][j]);
+
+				}
+
+				fprintf(filePtr3, "\n");
 			}
 
 			fclose(filePtr3);
 		}
+
+		//4x6
 		else if ((strcmp(input2, mat5) == 0)) {
 			sprintf(fullFilePath, "%sobach_pt3_25", FILE_PATH);
 			filePtr3 = fopen(fullFilePath, "w");
 
-			for (int i = 0; i < FIRST; i++) {
-				for (int j = 0; j < LAST; j++) {
-					fprintf(filePtr3, "%3.2lf ", (matrix1[i][j] + matrix2[j][i]));
-					if (j == LAST - 1) {
-						fprintf(filePtr3, "\n");
+			for (int i = 0; i < FIRST; i++) { //num rows for matrix 1
+				for (int j = 0; j < MAT_5_C; j++) { //num columns for matrix 2
+					for (int k = 0; k < MAT_5_R; k++) { //num rows for matrix 2
+						total = total + (matrix1[i][k] * matrix2[k][j]);
+						matrix3[i][j] = total;
 					}
+					total = 0;
 				}
+			}
+
+			//6x6
+			for (int i = 0; i < FIRST; i++) {
+				for (int j = 0; j < FIRST; j++) {
+
+					fprintf(filePtr3, "%3.2lf ", matrix3[i][j]);
+
+				}
+
+				fprintf(filePtr3, "\n");
 			}
 
 			fclose(filePtr3);
@@ -446,28 +510,53 @@ int main(void) {
 			sprintf(fullFilePath, "%sobach_pt3_34", FILE_PATH);
 			filePtr3 = fopen(fullFilePath, "w");
 
-			for (int i = 0; i < FIRST; i++) {
-				for (int j = 0; j < LAST; j++) {
-					fprintf(filePtr3, "%3.2lf ", (matrix1[i][j] + matrix2[j][i]));
-					if (j == LAST - 1) {
-						fprintf(filePtr3, "\n");
+			for (int i = 0; i < FIRST; i++) { //num rows for matrix 1
+				for (int j = 0; j < MAT_4_C; j++) { //num columns for matrix 2
+					for (int k = 0; k < MAT_4_R; k++) { //num rows for matrix 2
+						total = total + (matrix1[i][k] * matrix2[k][j]);
+						matrix3[i][j] = total;
 					}
+					total = 0;
 				}
+			}
+
+			//6x6
+			for (int i = 0; i < FIRST; i++) {
+				for (int j = 0; j < FIRST; j++) {
+
+					fprintf(filePtr3, "%3.2lf ", matrix3[i][j]);
+
+				}
+
+				fprintf(filePtr3, "\n");
 			}
 
 			fclose(filePtr3);
 		}
+		//4x6
 		else if ((strcmp(input2, mat5) == 0)) {
 			sprintf(fullFilePath, "%sobach_pt3_35", FILE_PATH);
 			filePtr3 = fopen(fullFilePath, "w");
 
-			for (int i = 0; i < FIRST; i++) {
-				for (int j = 0; j < LAST; j++) {
-					fprintf(filePtr3, "%3.2lf ", (matrix1[i][j] + matrix2[j][i]));
-					if (j == LAST - 1) {
-						fprintf(filePtr3, "\n");
+			for (int i = 0; i < FIRST; i++) { //num rows for matrix 1
+				for (int j = 0; j < MAT_5_C; j++) { //num columns for matrix 2
+					for (int k = 0; k < MAT_5_R; k++) { //num rows for matrix 2
+						total = total + (matrix1[i][k] * matrix2[k][j]);
+						matrix3[i][j] = total;
 					}
+					total = 0;
 				}
+			}
+
+			//6x6
+			for (int i = 0; i < FIRST; i++) {
+				for (int j = 0; j < FIRST; j++) {
+
+					fprintf(filePtr3, "%3.2lf ", matrix3[i][j]);
+
+				}
+
+				fprintf(filePtr3, "\n");
 			}
 
 			fclose(filePtr3);
@@ -485,14 +574,28 @@ int main(void) {
 			sprintf(fullFilePath, "%sobach_pt3_41", FILE_PATH);
 			filePtr3 = fopen(fullFilePath, "w");
 
-			for (int i = 0; i < MAT_4_R; i++) {
-				for (int j = 0; j < MAT_4_C; j++) {
-					fprintf(filePtr3, "%3.2lf ", (matrix1[i][j] * matrix2[j][i]));  //flipped j and i for second variable
-					if (j == MAT_4_C - 1) {
-						fprintf(filePtr3, "\n");
+			for (int i = 0; i < MAT_4_R; i++) { //num rows for matrix 1
+				for (int j = 0; j < FIRST; j++) { //num columns for matrix 2
+					for (int k = 0; k < FIRST; k++) { //num rows for matrix 2
+						total = total + (matrix1[i][k] * matrix2[k][j]);
+						matrix3[i][j] = total;
 					}
+					total = 0;
 				}
 			}
+
+			//4x6
+			for (int i = 0; i < LAST; i++) {
+				for (int j = 0; j < FIRST; j++) {
+
+					fprintf(filePtr3, "%3.2lf ", matrix3[i][j]);
+
+				}
+
+				fprintf(filePtr3, "\n");
+			}
+
+			fclose(filePtr3);
 
 			fclose(filePtr3);
 		}
@@ -501,13 +604,25 @@ int main(void) {
 			sprintf(fullFilePath, "%sobach_pt3_42", FILE_PATH);
 			filePtr3 = fopen(fullFilePath, "w");
 
-			for (int i = 0; i < MAT_4_R; i++) {
-				for (int j = 0; j < MAT_4_C; j++) {
-					fprintf(filePtr3, "%3.2lf ", (matrix1[i][j] * matrix2[j][i]));  //flipped j and i for second variable
-					if (j == MAT_4_C - 1) {
-						fprintf(filePtr3, "\n");
+			for (int i = 0; i < MAT_4_R; i++) { //num rows for matrix 1
+				for (int j = 0; j < LAST; j++) { //num columns for matrix 2
+					for (int k = 0; k < FIRST; k++) { //num rows for matrix 2
+						total = total + (matrix1[i][k] * matrix2[k][j]);
+						matrix3[i][j] = total;
 					}
+					total = 0;
 				}
+			}
+
+			//4x4
+			for (int i = 0; i < LAST; i++) {
+				for (int j = 0; j < LAST; j++) {
+
+					fprintf(filePtr3, "%3.2lf ", matrix3[i][j]);
+
+				}
+
+				fprintf(filePtr3, "\n");
 			}
 
 			fclose(filePtr3);
@@ -517,13 +632,25 @@ int main(void) {
 			sprintf(fullFilePath, "%sobach_pt3_43", FILE_PATH);
 			filePtr3 = fopen(fullFilePath, "w");
 
-			for (int i = 0; i < MAT_4_R; i++) {
-				for (int j = 0; j < MAT_4_C; j++) {
-					fprintf(filePtr3, "%3.2lf ", (matrix1[i][j] * matrix2[j][i]));  //flipped j and i for second variable
-					if (j == MAT_4_C - 1) {
-						fprintf(filePtr3, "\n");
+			for (int i = 0; i < MAT_4_R; i++) { //num rows for matrix 1
+				for (int j = 0; j < LAST; j++) { //num columns for matrix 2
+					for (int k = 0; k < FIRST; k++) { //num rows for matrix 2
+						total = total + (matrix1[i][k] * matrix2[k][j]);
+						matrix3[i][j] = total;
 					}
+					total = 0;
 				}
+			}
+
+			//4x4
+			for (int i = 0; i < LAST; i++) {
+				for (int j = 0; j < LAST; j++) {
+
+					fprintf(filePtr3, "%3.2lf ", matrix3[i][j]);
+
+				}
+
+				fprintf(filePtr3, "\n");
 			}
 
 			fclose(filePtr3);
@@ -541,13 +668,25 @@ int main(void) {
 			sprintf(fullFilePath, "%sobach_pt3_51", FILE_PATH);
 			filePtr3 = fopen(fullFilePath, "w");
 
-			for (int i = 0; i < MAT_5_R; i++) {
-				for (int j = 0; j < MAT_5_C; j++) {
-					fprintf(filePtr3, "%3.2lf ", (matrix1[i][j] * matrix2[j][i]));  //flipped j and i for second variable
-					if (j == MAT_5_C - 1) {
-						fprintf(filePtr3, "\n");
+			for (int i = 0; i < MAT_5_R; i++) { //num rows for matrix 1
+				for (int j = 0; j < FIRST; j++) { //num columns for matrix 2
+					for (int k = 0; k < FIRST; k++) { //num rows for matrix 2
+						total = total + (matrix1[i][k] * matrix2[k][j]);
+						matrix3[i][j] = total;
 					}
+					total = 0;
 				}
+			}
+
+			//4x6
+			for (int i = 0; i < LAST; i++) {
+				for (int j = 0; j < FIRST; j++) {
+
+					fprintf(filePtr3, "%3.2lf ", matrix3[i][j]);
+
+				}
+
+				fprintf(filePtr3, "\n");
 			}
 
 			fclose(filePtr3);
@@ -557,13 +696,26 @@ int main(void) {
 			sprintf(fullFilePath, "%sobach_pt3_52", FILE_PATH);
 			filePtr3 = fopen(fullFilePath, "w");
 
-			for (int i = 0; i < MAT_5_R; i++) {
-				for (int j = 0; j < MAT_5_C; j++) {
-					fprintf(filePtr3, "%3.2lf ", (matrix1[i][j] * matrix2[j][i]));  //flipped j and i for second variable
-					if (j == MAT_5_C - 1) {
-						fprintf(filePtr3, "\n");
+
+			for (int i = 0; i < MAT_5_R; i++) { //num rows for matrix 1
+				for (int j = 0; j < LAST; j++) { //num columns for matrix 2
+					for (int k = 0; k < FIRST; k++) { //num rows for matrix 2
+						total = total + (matrix1[i][k] * matrix2[k][j]);
+						matrix3[i][j] = total;
 					}
+					total = 0;
 				}
+			}
+
+			//4x4
+			for (int i = 0; i < LAST; i++) {
+				for (int j = 0; j < LAST; j++) {
+
+					fprintf(filePtr3, "%3.2lf ", matrix3[i][j]);
+
+				}
+
+				fprintf(filePtr3, "\n");
 			}
 
 			fclose(filePtr3);
@@ -573,13 +725,26 @@ int main(void) {
 			sprintf(fullFilePath, "%sobach_pt3_53", FILE_PATH);
 			filePtr3 = fopen(fullFilePath, "w");
 
-			for (int i = 0; i < FIRST; i++) {
-				for (int j = 0; j < LAST; j++) {
-					fprintf(filePtr3, "%3.2lf ", (matrix1[i][j] * matrix2[j][i]));  //flipped j and i for second variable
-					if (j == LAST - 1) {
-						fprintf(filePtr3, "\n");
+
+			for (int i = 0; i < MAT_5_R; i++) { //num rows for matrix 1
+				for (int j = 0; j < LAST; j++) { //num columns for matrix 2
+					for (int k = 0; k < FIRST; k++) { //num rows for matrix 2
+						total = total + (matrix1[i][k] * matrix2[k][j]);
+						matrix3[i][j] = total;
 					}
+					total = 0;
 				}
+			}
+
+			//4x4
+			for (int i = 0; i < LAST; i++) {
+				for (int j = 0; j < LAST; j++) {
+
+					fprintf(filePtr3, "%3.2lf ", matrix3[i][j]);
+
+				}
+
+				fprintf(filePtr3, "\n");
 			}
 
 			fclose(filePtr3);
@@ -597,28 +762,53 @@ int main(void) {
 			sprintf(fullFilePath, "%sobach_pt3_64", FILE_PATH);
 			filePtr3 = fopen(fullFilePath, "w");
 
-			for (int i = 0; i < MAT_6_R; i++) {
-				for (int j = 0; j < MAT_6_C; j++) {
-					fprintf(filePtr3, "%3.2lf ", (matrix1[i][j] + matrix2[j][i]));
-					if (j == MAT_6_C - 1) {
-						fprintf(filePtr3, "\n");
+			for (int i = 0; i < MAT_6_R; i++) { //num rows for matrix 1
+				for (int j = 0; j < FIRST; j++) { //num columns for matrix 2
+					for (int k = 0; k < LAST; k++) { //num rows for matrix 2
+						total = total + (matrix1[i][k] * matrix2[k][j]);
+						matrix3[i][j] = total;
 					}
+					total = 0;
 				}
+			}
+
+			//2x6
+			for (int i = 0; i < MAT_6_R; i++) {
+				for (int j = 0; j < MAT_5_C; j++) {
+
+					fprintf(filePtr3, "%3.2lf ", matrix3[i][j]);
+
+				}
+
+				fprintf(filePtr3, "\n");
 			}
 
 			fclose(filePtr3);
 		}
+		//4x6
 		else if ((strcmp(input2, mat5) == 0)) {
 			sprintf(fullFilePath, "%sobach_pt3_65", FILE_PATH);
 			filePtr3 = fopen(fullFilePath, "w");
 
-			for (int i = 0; i < MAT_6_R; i++) {
-				for (int j = 0; j < MAT_6_C; j++) {
-					fprintf(filePtr3, "%3.2lf ", (matrix1[i][j] + matrix2[j][i]));
-					if (j == MAT_6_C - 1) {
-						fprintf(filePtr3, "\n");
+			for (int i = 0; i < MAT_6_R; i++) { //num rows for matrix 1
+				for (int j = 0; j < MAT_5_C; j++) { //num columns for matrix 2
+					for (int k = 0; k < MAT_5_R; k++) { //num rows for matrix 2
+						total = total + (matrix1[i][k] * matrix2[k][j]);
+						matrix3[i][j] = total;
 					}
+					total = 0;
 				}
+			}
+
+			//2x6
+			for (int i = 0; i < MAT_6_R; i++) {
+				for (int j = 0; j < MAT_5_C; j++) {
+
+					fprintf(filePtr3, "%3.2lf ", matrix3[i][j]);
+
+				}
+
+				fprintf(filePtr3, "\n");
 			}
 
 			fclose(filePtr3);
