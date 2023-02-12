@@ -76,7 +76,7 @@ int main(void) {
 	char fullFilePath[LENGTH_FILE_PATH];
 
 	do {
-		puts("Please choose one of the following matrices to add: \n");
+		puts("Please choose one of the following matrices to multiply: \n");
 		puts("1. Mat1\n2. Mat2\n3. Mat3\n4. Mat4\n5. Mat5\n6. Mat6\n");
 		fgets(input1, LENGTH, stdin);
 		fgetsRemoveNewLine(input1);
@@ -94,7 +94,7 @@ int main(void) {
 	valid = false;
 
 	do {
-		puts("Please choose one of the following matrices to add to your first matrix: \n");
+		puts("Please choose one of the following matrices to multiply to your first matrix: \n");
 		puts("1. Mat1\n2. Mat2\n3. Mat3\n4. Mat4\n5. Mat5\n6. Mat6\n");
 		fgets(input2, LENGTH, stdin);
 		fgetsRemoveNewLine(input2);
