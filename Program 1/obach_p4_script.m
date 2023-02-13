@@ -13,6 +13,7 @@ M = [-1 -3  2  3  1;
      -2  3 -1  1  3];
 
 plot(M);
+legend({'r','s','u','v','w'},'Location','southwest')
 
 rs = 0;
 uv = 0;

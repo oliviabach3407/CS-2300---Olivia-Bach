@@ -29,3 +29,4 @@ M = [-4 -2 -1 ;
       1  6 -2];
 
 plot(M);
+legend({'r + s','s + w','u - v'},'Location','southwest')
