@@ -16,7 +16,7 @@
 void fgetsRemoveNewLine(char* buff);
 void getMatrix(double newMatrix[4]);
 bool determinate(double testMatrix[4]);
-void firstElimination(double firstMatrix[4], double firstStep[4], double identity[4]);
+void firstElimination(double firstMatrix[4], double firstStep[4], double identity[4], double newIdentity[4]);
 
 int main(void) {
 
@@ -26,6 +26,7 @@ int main(void) {
 	double matrix[4] = { 0 };
 	double firstMatrix[4] = { 0 };
 	double identityMatrix[4] = {1, 0, 0, 1};  //in order of a11, a21, a12, a22
+	double newIdentity[4] = { 0 };
 	bool inverseOrNo = true;
 
 	getMatrix(matrix);
@@ -38,7 +39,20 @@ int main(void) {
 		//calculate inverse with gauss elimination
 
 		if (matrix[1] != 0) {
-			firstElimination(matrix, firstMatrix, identityMatrix);
+			firstElimination(matrix, firstMatrix, identityMatrix, newIdentity);
+
+			puts("\nRESULTS OF FIRST STEP:");
+			puts("\n-------------------------\n\n");
+
+			puts("\nOriginal matrix multiplied with S:");
+
+			printf("\n| %5.2lf   %5.2lf |", firstMatrix[0], firstMatrix[2]);
+			printf("\n| %5.2lf   %5.2lf |", firstMatrix[1], firstMatrix[3]);
+
+			puts("\n\n\nIdentity matrix multiplied with S:");
+
+			printf("\n| %5.2lf   %5.2lf |", newIdentity[0], newIdentity[2]);
+			printf("\n| %5.2lf   %5.2lf |", newIdentity[1], newIdentity[3]);
 		}
 
 
@@ -135,36 +149,28 @@ bool determinate(double testMatrix[4]) {
 
 }
 
-void firstElimination(double firstMatrix[4], double firstStep[4], double identity[4]) {
+void firstElimination(double firstMatrix[4], double firstStep[4], double identity[4], double newIdentity[4]) {
 	
-	double total = 0;
+	double total1 = 0;
+	double total2 = 0;
 
 	double sOne11 = 1;
 	double sOne21 =  (-(firstMatrix[1])) / firstMatrix[0];
 	double sOne12 = 0;
 	double sOne22 = 1;
 
+	//multiplying og matrix and identity matrix with S matrix 
 
-	//multiplying with S matrix 
+	firstStep[0] = (sOne11 * firstMatrix[0]) + (sOne12 * firstMatrix[1]);  //a11 for firstStep
+	firstStep[1] = (sOne21 * firstMatrix[0]) + (sOne22 * firstMatrix[1]);  //a21 for firstStep
 
-	for (int i = 0; i < SIZE; i++) { //num rows for matrix 1
-		if (i == 0) {
-			total = total + (firstMatrix[i] * sOne11);
-			firstStep[i] = total;
-		}
-		else if (i == 1) {
-			total = total + (firstMatrix[i] * sOne21);
-			firstStep[i] = total;
-		}
-		else if (i == 2) {
-			total = total + (firstMatrix[i] * sOne12);
-			firstStep[i] = total;
-		}
-		else if (i == 3) {
-			total = total + (firstMatrix[i] * sOne22);
-			firstStep[i] = total;
-		}
-		
-		total = 0;
-	}
+	firstStep[2] = (sOne11 * firstMatrix[2]) + (sOne12 * firstMatrix[3]);  //a12 for firstStep
+	firstStep[3] = (sOne21 * firstMatrix[2]) + (sOne22 * firstMatrix[3]);  //a22 for firstStep
+
+	newIdentity[0] = (sOne11 * identity[0]) + (sOne12 * identity[1]);  //a11 for newIdentity
+	newIdentity[1] = (sOne21 * identity[0]) + (sOne22 * identity[1]);  //a21 for newIdentity
+
+	newIdentity[2] = (sOne11 * identity[2]) + (sOne12 * identity[3]);  //a12 for newIdentity
+	newIdentity[3] = (sOne21 * identity[2]) + (sOne22 * identity[3]);  //a22 for newIdentity
+
 }
