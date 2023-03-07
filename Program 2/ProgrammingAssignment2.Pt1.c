@@ -11,8 +11,8 @@
 #define NUM_SIZES 4
 #define NUM_YN 2
 
-
-bool getValidDouble(char* input, double* validDoublePtr, const int MAX, const int MIN);
+void implicitToParametric(double a, double b, double c);
+void parametricToImplicit(double p1, double p2, double v1, double v2);
 void fgetsRemoveNewLine(char* buff);
 bool parametricOrImplicit();
 
@@ -33,11 +33,11 @@ int main(void) {
 	double pValue2 = 0;
 	double vValue2 = 0;
 
-	char pInput1[3] = " ";
-	char pInput2[3] = " ";
+	char pInput1[4] = " ";
+	char pInput2[4] = " ";
 
-	char vInput1[3] = " ";
-	char vInput2[3] = " ";
+	char vInput1[4] = " ";
+	char vInput2[4] = " ";
 
 	char aInput3[4] = " ";
 	char bInput3[4] = " ";
@@ -57,9 +57,6 @@ int main(void) {
 		fgetsRemoveNewLine(pInput1);
 		fgets(pInput2, LENGTH, stdin);
 		fgetsRemoveNewLine(pInput2);
-
-
-		//gonna need to get the two values for p separately from each other
 		
 		char* end1;
 		pValue1 = strtod(&pInput1[0], &end1);
@@ -76,13 +73,7 @@ int main(void) {
 		vValue1 = strtod(&vInput1[0], &end2);
 		vValue2 = strtod(&vInput2[0], &end2);
 
-		printf("\nP = \n\n");
-		printf("\n| %.2lf |", pValue1);
-		printf("\n| %.2lf |", pValue2);
-
-		printf("\nV = \n\n");
-		printf("\n| %.2lf |", vValue1);
-		printf("\n| %.2lf |", vValue2);
+		parametricToImplicit(pValue1, pValue2, vValue1, vValue2);
 	}
 
 	//implicit
@@ -104,17 +95,84 @@ int main(void) {
 		bValue = strtod(&bInput3[0], &end3);
 		cValue = strtod(&cInput3[0], &end3);
 
-		printf("\nA = \n");
-		printf("\n%.2lf\n", aValue);
-
-		printf("\nB = \n");
-		printf("\n%.2lf\n", bValue);
-
-		printf("\nC = \n");
-		printf("\n%.2lf\n", cValue);
+		implicitToParametric(aValue, bValue, cValue);
 	}
 
 	return 0;
+}
+
+void implicitToParametric(double a, double b, double c) {
+
+	double v1 = 0;
+	double v2 = 0;
+	
+	double p1 = 0;
+	double p2 = 0;
+
+	if (a != 0 && b != 0) {
+		v1 = b;
+		v2 = -(a);
+	}
+	else if (a == 0) {
+		v1 = -(b);
+		v2 = a;
+	}
+	else if (b == 0) {
+		v1 = b;
+		v2 = -(a);
+	}
+	else {
+		v1 = 0;
+		v2 = 0;
+	}
+
+	//absolute value checking for p
+
+	if (abs(a) > abs(b)) {
+		p1 = -(c / a);
+		p2 = 0;
+	}
+	else if (abs(a) < abs(b)) {
+		p1 = 0;
+		p2 = -(c / a); 
+	}
+	//if a == b
+	else {
+		p1 = 1;
+		p2 = 0;
+	}
+
+	printf("\n\nYour converted equations is: l(t) = | %5.2lf | + t| %5.2lf |", p1, v1);
+	printf("\n                                    | %5.2lf | +  | %5.2lf |", p2, v2);
+
+}
+
+void parametricToImplicit(double p1, double p2, double v1, double v2) {
+
+	double c = 0;
+	double a1 = 0;
+	double a2 = 0;
+
+	//check to make sure you can negate
+	if (v1 != 0 && v2 != 0) {
+		a1 = -(v2);
+		a2 = v1;
+	}
+	else if (v1 == 0) {
+		a1 = -(v2);
+		a2 = v1;
+	}
+	else if (v2 == 0) {
+		a1 = v2;
+		a2 = -(v1);
+	}
+	else {
+		a1 = 0;
+		a2 = 0;
+	}
+
+	c = -(a1 * p1 + a2 * p2);
+	printf("\n\nYour converted equation is: (%.2lf)x1 + (%.2lf)x2 + %.2lf", a1, a2, c);
 }
 
 bool parametricOrImplicit() {
