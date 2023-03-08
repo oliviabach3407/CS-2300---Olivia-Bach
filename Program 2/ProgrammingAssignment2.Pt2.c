@@ -20,6 +20,7 @@ void firstElimination(double firstMatrix[4], double firstStep[4], double identit
 void secondElimination(double original[4], double incomingMatrix[4], double newMatrix[4], double incomingIdentity[4], double newIdentity[4], double sTwo[4]);
 void thirdElimination(double original[4], double incomingMatrix[4], double newMatrix[4], double incomingIdentity[4], double newIdentity[4], double sThree[4]);
 void calculateInverse(double sOne[4], double sTwo[4], double sThree[4], double completeInverse[4]);
+void testInverse(double original[4], double inverse[4], double identity[4]);
 
 int main(void) {
 
@@ -113,6 +114,12 @@ int main(void) {
 
 			printf("\n| %5.2lf   %5.2lf |", finalInverse[0], finalInverse[2]);
 			printf("\n| %5.2lf   %5.2lf |", finalInverse[1], finalInverse[3]);
+
+			puts("\n\n--------------------------------------------------------------------");
+			puts("\nDOES THE ORIGINAL MATRIX TIMES THE INVERSE EQUAL THE IDENTITY MATRIX?:");
+			puts("\n--------------------------------------------------------------------");
+
+			testInverse(matrix, finalInverse, identityMatrix);
 			
 	}
 	else {
@@ -193,9 +200,9 @@ void getMatrix(double newMatrix[4]) {
 bool determinate(double testMatrix[4]) {
 
 	double a11 = testMatrix[0];
-	double a21 = testMatrix[0];
-	double a12 = testMatrix[0];
-	double a22 = testMatrix[0];
+	double a21 = testMatrix[1];
+	double a12 = testMatrix[2];
+	double a22 = testMatrix[3];
 
 	double determinate = ((a11 * a22) - (a21 * a12));
 
@@ -241,7 +248,7 @@ void secondElimination(double original[4], double incomingMatrix[4], double newM
 
 	double sOne11 = 1;
 	double sOne21 = 0;
-	double sOne12 = original[0] / original[1];
+	double sOne12 = (-original[0]) / (-original[1]);  //this is the issue --> why not work???????
 	double sOne22 = 1;
 
 	sTwo[0] = sOne11;
@@ -315,4 +322,21 @@ void calculateInverse(double sOne[4], double sTwo[4], double sThree[4], double c
 	completeInverse[2] = (tempMatrix[0] * sOne[2]) + (tempMatrix[2] * sOne[3]);
 	completeInverse[3] = (tempMatrix[1] * sOne[2]) + (tempMatrix[3] * sOne[3]);
 
+}
+
+void testInverse(double original[4], double inverse[4], double identity[4]) {
+
+	double orgXInverse[4] = { 0 };
+
+	orgXInverse[0] = (original[0] * inverse[0]) + (original[2] * inverse[1]);
+	orgXInverse[1] = (original[1] * inverse[0]) + (original[3] * inverse[1]);
+
+	orgXInverse[2] = (original[0] * inverse[2]) + (original[2] * inverse[3]);
+	orgXInverse[3] = (original[1] * inverse[2]) + (original[3] * inverse[3]);
+
+	for (int i = 0; i < 4; i++) {
+		if (orgXInverse[i] == identity[i]) {
+			printf("\n\nIndex [%d] matches", i);
+		}
+	}
 }
