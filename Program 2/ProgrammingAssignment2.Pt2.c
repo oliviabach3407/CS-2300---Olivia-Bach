@@ -44,6 +44,7 @@ int main(void) {
 	double s3[4] = { 0 };
 
 	bool inverseOrNo = true;
+	bool notSingular = true;
 
 	getMatrix(matrix);
 
@@ -54,66 +55,78 @@ int main(void) {
 	if (inverseOrNo) {
 		//calculate inverse with gauss elimination
 
-		if (matrix[1] != 0) { //if that spot isn't already a 0
-			firstElimination(matrix, firstMatrix, identityMatrix, newIdentity, s1);
+		while (notSingular) {
+			if (matrix[1] != 0) { //if that spot isn't already a 0
+				firstElimination(matrix, firstMatrix, identityMatrix, newIdentity, s1);
 
-			puts("\n\nRESULTS OF FIRST STEP:");
-			puts("\n-------------------------");
+				puts("\n\nRESULTS OF FIRST STEP:");
+				puts("\n-------------------------");
 
-			puts("\nOriginal matrix multiplied with S:");
+				puts("\nOriginal matrix multiplied with S:");
 
-			printf("\n| %5.2lf   %5.2lf |", firstMatrix[0], firstMatrix[2]);
-			printf("\n| %5.2lf   %5.2lf |", firstMatrix[1], firstMatrix[3]);
+				printf("\n| %5.2lf   %5.2lf |", firstMatrix[0], firstMatrix[2]);
+				printf("\n| %5.2lf   %5.2lf |", firstMatrix[1], firstMatrix[3]);
 
-			puts("\n\n\nIdentity matrix multiplied with S:");
+				puts("\n\n\nIdentity matrix multiplied with S:");
 
-			printf("\n| %5.2lf   %5.2lf |", newIdentity[0], newIdentity[2]);
-			printf("\n| %5.2lf   %5.2lf |", newIdentity[1], newIdentity[3]);
+				printf("\n| %5.2lf   %5.2lf |", newIdentity[0], newIdentity[2]);
+				printf("\n| %5.2lf   %5.2lf |", newIdentity[1], newIdentity[3]);
+			}
+
+			if (firstMatrix[3] == 0) {
+				puts("\n\n-------------------------");
+				printf("MATRIX IS SINGULAR");
+				printf("\nNO INVERSE");
+				puts("\n-------------------------");
+				notSingular = false; 
+			}
+
+			else {
+
+				if (matrix[2] != 0) {
+					secondElimination(matrix, firstMatrix, secondMatrix, newIdentity, newIdentity2, s2);
+
+					puts("\n\nRESULTS OF SECOND STEP:");
+					puts("\n-------------------------");
+
+					puts("\nPrevious matrix multiplied with S:");
+
+					printf("\n| %5.2lf   %5.2lf |", secondMatrix[0], secondMatrix[2]);
+					printf("\n| %5.2lf   %5.2lf |", secondMatrix[1], secondMatrix[3]);
+
+					puts("\n\n\nPrevious identity matrix multiplied with S:");
+
+					printf("\n| %5.2lf   %5.2lf |", newIdentity2[0], newIdentity2[2]);
+					printf("\n| %5.2lf   %5.2lf |", newIdentity2[1], newIdentity2[3]);
+				}
+
+				if (matrix[0] != 1 && matrix[3] != 1) {
+					thirdElimination(matrix, secondMatrix, thirdMatrix, newIdentity2, newIdentity3, s3);
+
+					puts("\n\nRESULTS OF THIRD STEP:");
+					puts("\n-------------------------");
+
+					puts("\nPrevious matrix multiplied with S:");
+
+					printf("\n| %5.2lf   %5.2lf |", thirdMatrix[0], thirdMatrix[2]);
+					printf("\n| %5.2lf   %5.2lf |", thirdMatrix[1], thirdMatrix[3]);
+
+					puts("\n\n\nPrevious identity matrix multiplied with S:");
+
+					printf("\n| %5.2lf   %5.2lf |", newIdentity3[0], newIdentity3[2]);
+					printf("\n| %5.2lf   %5.2lf |", newIdentity3[1], newIdentity3[3]);
+				}
+
+				calculateInverse(s1, s2, s3, finalInverse);
+
+				puts("\n\n-------------------------");
+				puts("\nFINAL INVERSE:");
+				puts("\n-------------------------");
+
+				printf("\n| %5.2lf   %5.2lf |", finalInverse[0], finalInverse[2]);
+				printf("\n| %5.2lf   %5.2lf |", finalInverse[1], finalInverse[3]);
+			}
 		}
-
-		if (matrix[2] != 0) {
-			secondElimination(matrix, firstMatrix, secondMatrix, newIdentity, newIdentity2, s2);
-
-			puts("\n\nRESULTS OF SECOND STEP:");
-			puts("\n-------------------------");
-
-			puts("\nPrevious matrix multiplied with S:");
-
-			printf("\n| %5.2lf   %5.2lf |", secondMatrix[0], secondMatrix[2]);
-			printf("\n| %5.2lf   %5.2lf |", secondMatrix[1], secondMatrix[3]);
-
-			puts("\n\n\nPrevious identity matrix multiplied with S:");
-
-			printf("\n| %5.2lf   %5.2lf |", newIdentity2[0], newIdentity2[2]);
-			printf("\n| %5.2lf   %5.2lf |", newIdentity2[1], newIdentity2[3]);
-		}
-
-		if (matrix[0] != 1 && matrix[3] != 1) {
-			thirdElimination(matrix, secondMatrix, thirdMatrix, newIdentity2, newIdentity3, s3);
-
-			puts("\n\nRESULTS OF THIRD STEP:");
-			puts("\n-------------------------");
-
-			puts("\nPrevious matrix multiplied with S:");
-
-			printf("\n| %5.2lf   %5.2lf |", thirdMatrix[0], thirdMatrix[2]);
-			printf("\n| %5.2lf   %5.2lf |", thirdMatrix[1], thirdMatrix[3]);
-
-			puts("\n\n\nPrevious identity matrix multiplied with S:");
-
-			printf("\n| %5.2lf   %5.2lf |", newIdentity3[0], newIdentity3[2]);
-			printf("\n| %5.2lf   %5.2lf |", newIdentity3[1], newIdentity3[3]);
-		}
-
-		calculateInverse(s1, s2, s3, finalInverse);
-
-		puts("\n\n-------------------------");
-		puts("\nFINAL INVERSE:");
-		puts("\n-------------------------");
-
-		printf("\n| %5.2lf   %5.2lf |", finalInverse[0], finalInverse[2]);
-		printf("\n| %5.2lf   %5.2lf |", finalInverse[1], finalInverse[3]);
-
 	}
 	else {
 		//end program
@@ -196,6 +209,8 @@ bool determinate(double testMatrix[4]) {
 	double a22 = testMatrix[0];
 
 	double determinate = (a11 * a22 + a21 * a12);
+
+	printf("\nThis is the determinate: %lf \n\n", determinate);
 
 	if (determinate == 0) {
 		return false;
@@ -300,17 +315,17 @@ void calculateInverse(double sOne[4], double sTwo[4], double sThree[4], double c
 	//first multiplication (s3 * s2)
 
 	tempMatrix[0] = (sThree[0] * sTwo[0]) + (sThree[2] * sTwo[1]);
-	tempMatrix[2] = (sThree[0] * sTwo[2]) + (sThree[2] * sTwo[3]); 
-
 	tempMatrix[1] = (sThree[1] * sTwo[0]) + (sThree[3] * sTwo[1]);
+
+	tempMatrix[2] = (sThree[0] * sTwo[2]) + (sThree[2] * sTwo[3]);
 	tempMatrix[3] = (sThree[1] * sTwo[2]) + (sThree[3] * sTwo[3]);
 
 	//second multiplication ((s3*s2) * s1)
 
 	completeInverse[0] = (tempMatrix[0] * sOne[0]) + (tempMatrix[2] * sOne[1]);
-	completeInverse[2] = (tempMatrix[0] * sOne[2]) + (tempMatrix[2] * sOne[3]);
-
 	completeInverse[1] = (tempMatrix[1] * sOne[0]) + (tempMatrix[3] * sOne[1]);
+
+	completeInverse[2] = (tempMatrix[0] * sOne[2]) + (tempMatrix[2] * sOne[3]);
 	completeInverse[3] = (tempMatrix[1] * sOne[2]) + (tempMatrix[3] * sOne[3]);
 
 }
