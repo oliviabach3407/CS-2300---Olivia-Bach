@@ -251,14 +251,14 @@ void calculateV(double A1[2], double A2[2], double A3[2], double B1[2], double B
 
 void calculateInverse(double V[4], double inverse[4]) {
 
-	double determinate = 1 / ((V[0] * V[3]) - (V[2] * V[1]));
+	double determinate = 1.0 / ((V[0] * V[3]) - (V[2] * V[1]));
 
 	double reversed[4] = { 0 };
 
 	reversed[0] = V[3];
 	reversed[1] = -(V[1]);
 	reversed[2] = -(V[2]);
-	reversed[3] = V[1];
+	reversed[3] = V[0];
 
 	inverse[0] = reversed[0] * determinate;
 	inverse[1] = reversed[1] * determinate;
