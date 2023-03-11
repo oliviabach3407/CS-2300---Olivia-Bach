@@ -15,7 +15,8 @@
 
 void getMatrix(double newMatrix[4]);
 void fgetsRemoveNewLine(char* buff);
-void getEigenVector(double ogMatrix[4], double lambda);
+void getEigenVector(double ogMatrix[4], double lambda, double eigenVectors[2]);
+void normalize(double eigenVectors[2], double normalized[2]);
 
 int main() {
    
@@ -31,6 +32,12 @@ int main() {
 	double b = 0;
 	double c = 0;
 	double d = 0;
+
+	double eigenVector1[2] = { 0 };
+	double eigenVector2[2] = { 0 };
+
+	double eigenNormal1[2] = { 0 };
+	double eigenNormal2[2] = { 0 };
 
 	getMatrix(matrix);
 
@@ -63,16 +70,24 @@ int main() {
     if (absLambda1 > absLambda2) {
         printf("\nDominant eigenvalue: %.2f\n", lambda1);
 
-		getEigenVector(matrix, lambda1);
+		getEigenVector(matrix, lambda1, eigenVector1);
 
-        printf("\nEigenvector: [%.2f, %.2f]\n", (b / (lambda1 - a)), 1);
+        printf("\nEigenvector: [%.2f, %.2f]\n", eigenVector1[0], eigenVector1[1]);
+
+		normalize(eigenVector1, eigenNormal1);
+
+		printf("\nNormalized Eigenvectors: [%.2f, %.2f]\n", eigenNormal1[0], eigenNormal1[1]);
     }
     else {
         printf("\nDominant eigenvalue: %.2f\n", lambda2);
 
-		getEigenVector(matrix, lambda2);
+		getEigenVector(matrix, lambda2, eigenVector2);
 
-        printf("\nEigenvector: [%.2f, %.2f]\n", (b / (lambda2 - a)), 1);
+        printf("\nEigenvector: [%.2f, %.2f]\n", eigenVector2[0], eigenVector2[1]);
+
+		normalize(eigenVector2, eigenNormal2);
+
+		printf("\nNormalized Eigenvectors: [%.2f, %.2f]\n", eigenNormal2[0], eigenNormal2[1]);
     }
 
     return 0;
@@ -142,6 +157,28 @@ void fgetsRemoveNewLine(char* buff) {
 	}
 }
 
-void getEigenVector(double ogMatrix[4], double lambda) {
+void getEigenVector(double ogMatrix[4], double lambda, double eigenVectors[2]) {
+	
+	double newMatrix[4] = { 0 };
 
+	newMatrix[0] = ogMatrix[0] - lambda;
+	newMatrix[1] = ogMatrix[1];
+	newMatrix[2] = ogMatrix[2];
+	newMatrix[3] = ogMatrix[3] - lambda; 
+
+	eigenVectors[0] = 1;
+	eigenVectors[1] = 0;
+
+	if (ogMatrix[0] != 0) {
+		eigenVectors[0] = (-ogMatrix[2]) / ogMatrix[0];
+		eigenVectors[1] = 1;
+	}
+}
+
+void normalize(double eigenVectors[2], double normalized[2]) {
+
+	double magnitude = sqrt((eigenVectors[0] * eigenVectors[0]) + (eigenVectors[1] * eigenVectors[1]));
+
+	normalized[0] = eigenVectors[0] / magnitude;
+	normalized[1] = eigenVectors[1] / magnitude;
 }
