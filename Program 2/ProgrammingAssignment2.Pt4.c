@@ -61,9 +61,15 @@ int main() {
 	if (lambda1 < 0) {
 		absLambda1 = -(lambda1);
 	}
+	else {
+		absLambda1 = lambda1;
+	}
 
 	if (lambda2 < 0) {
 		absLambda2 = -(lambda2);
+	}
+	else {
+		absLambda2 = lambda2;
 	}
 
 	//figure out which lambda is the dominant one and calculate vectors
@@ -76,7 +82,7 @@ int main() {
 
 		normalize(eigenVector1, eigenNormal1);
 
-		printf("\nNormalized Eigenvectors: [%.2f, %.2f]\n", eigenNormal1[0], eigenNormal1[1]);
+		printf("\nNormalized Eigenvector: [%.2f, %.2f]\n", eigenNormal1[0], eigenNormal1[1]);
     }
     else {
         printf("\nDominant eigenvalue: %.2f\n", lambda2);
@@ -87,17 +93,17 @@ int main() {
 
 		normalize(eigenVector2, eigenNormal2);
 
-		printf("\nNormalized Eigenvectors: [%.2f, %.2f]\n", eigenNormal2[0], eigenNormal2[1]);
+		printf("\nNormalized Eigenvector: [%.2f, %.2f]\n", eigenNormal2[0], eigenNormal2[1]);
     }
 
     return 0;
 }
 
 void getMatrix(double newMatrix[4]) {
-	char aOneOne[4] = " ";
-	char aTwoOne[4] = " ";
-	char aOneTwo[4] = " ";
-	char aTwoTwo[4] = " ";
+	char aOneOne[6] = " ";
+	char aTwoOne[6] = " ";
+	char aOneTwo[6] = " ";
+	char aTwoTwo[6] = " ";
 
 	double a11 = 0;
 	double a21 = 0;
@@ -169,8 +175,8 @@ void getEigenVector(double ogMatrix[4], double lambda, double eigenVectors[2]) {
 	eigenVectors[0] = 1;
 	eigenVectors[1] = 0;
 
-	if (ogMatrix[0] != 0) {
-		eigenVectors[0] = (-ogMatrix[2]) / ogMatrix[0];
+	if (newMatrix[0] != 0) {
+		eigenVectors[0] = (-newMatrix[2]) / newMatrix[0];
 		eigenVectors[1] = 1;
 	}
 }
