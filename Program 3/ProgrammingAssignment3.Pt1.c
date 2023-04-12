@@ -38,9 +38,6 @@ void writeToFile(const char filePath[LENGTH_FILE_PATH], double solution[TWOXONE]
 
 int main(void) {
 
-    //this if for the new file names for the solution
-    char fullFilePath[LENGTH_FILE_PATH];
-
     FILE* filePtr1 = 0;
     FILE* filePtr2 = 0;
 
@@ -71,7 +68,7 @@ void writeToFile(const char filePath[LENGTH_FILE_PATH], double solution[TWOXONE]
 
 	FILE* filePtr3;
 
-	sprintf(fullFilePath1, "%ssolution%d", filePath, result);
+	sprintf(fullFilePath1, "%spart1.answer%d", filePath, result);
 	filePtr3 = fopen(fullFilePath1, "w");
 
     if (result == 1) {
@@ -108,6 +105,7 @@ void getMatrix(double matrixA[TWOXTWO], double vectorB[TWOXONE], FILE* filePtr, 
     int k = 0;
     int j = 0;
 
+    //dividing into A and b
     for (int i = 0; i < THREEXTHREE; i++) {
         if (i == 2 || i == 5) {
             vectorB[j] = placeholder[i];
@@ -124,6 +122,9 @@ void getMatrix(double matrixA[TWOXTWO], double vectorB[TWOXONE], FILE* filePtr, 
 }
 //had to make this one from scratch - no borrowed code from previous programs
 void gaussAndBack(double matrixA[TWOXTWO], double vectorB[TWOXONE], double solutionX[TWOXONE]) {
+    double temp = 0;
+    double determinant = 0;
+
     if (matrixA[0] == 0 && matrixA[1] == 0 && vectorB[0] == 0) {
         printf("System underdetermined\n");
 		writeToFile(FILE_PATH, solutionX, 1);
@@ -133,7 +134,7 @@ void gaussAndBack(double matrixA[TWOXTWO], double vectorB[TWOXONE], double solut
 		writeToFile(FILE_PATH, solutionX, 2);
     }
     else if (matrixA[0] == 0 && matrixA[1] != 0) {
-        double temp = matrixA[0];
+        temp = matrixA[0];
         matrixA[0] = matrixA[1];
         matrixA[1] = temp;
 
@@ -143,12 +144,13 @@ void gaussAndBack(double matrixA[TWOXTWO], double vectorB[TWOXONE], double solut
 
         solutionX[1] = vectorB[0] / matrixA[1];
 
-        printf("Solution: (%.4lf, %.4lf)\n", solutionX[0], solutionX[1]);
+        printf("%.4lf %.4lf\n", solutionX[0], solutionX[1]);
 		writeToFile(FILE_PATH, solutionX, 3);
     }
     else {
-        double determinant = matrixA[0] * matrixA[3] - matrixA[1] * matrixA[2];
+        determinant = matrixA[0] * matrixA[3] - matrixA[1] * matrixA[2];
 
+        //need to check again for determinant
         if (determinant == 0) {
             printf("System inconsistent\n");
 			writeToFile(FILE_PATH, solutionX, 2);
@@ -157,7 +159,7 @@ void gaussAndBack(double matrixA[TWOXTWO], double vectorB[TWOXONE], double solut
             solutionX[0] = (matrixA[3] * vectorB[0] - matrixA[1] * vectorB[1]) / determinant;
             solutionX[1] = (matrixA[0] * vectorB[1] - matrixA[2] * vectorB[0]) / determinant;
 
-            printf("Solution: (%.4lf, %.4lf)\n", solutionX[0], solutionX[1]);
+            printf("%.4lf %.4lf\n", solutionX[0], solutionX[1]);
 			writeToFile(FILE_PATH, solutionX, 3);
         }
     }

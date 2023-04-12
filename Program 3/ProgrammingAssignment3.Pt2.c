@@ -202,7 +202,7 @@ void writeToFile(const char filePath[LENGTH_FILE_PATH], double lambda[TWOXTWO], 
 
 	FILE* filePtr3;
 
-	sprintf(fullFilePath1, "%sanswer%d", filePath, x);
+	sprintf(fullFilePath1, "%spart2.answer%d", filePath, x);
 	filePtr3 = fopen(fullFilePath1, "w");
 
 
