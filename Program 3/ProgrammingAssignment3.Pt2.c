@@ -29,7 +29,7 @@ void calculations(double matrix[4], int x);
 void getMatrix(double newMatrix[4], FILE* filePtr, const char path[LENGTH_FILE_PATH]);
 void getEigenVector(double ogMatrix[4], double lambda, double eigenVectors[2]);
 void normalize(double eigenVectors[2], double extraVector[2], double normalized[2], double normalized2[2]);
-void lambdaAndR(double l1, double l2, double vector1[2], double vector2[2], int x, bool dominate);
+void lambdaAndR(double l1, double l2, double vector1[2], double vector2[2], int x);
 void rLambdaRT(double bigLambda[TWOXTWO], double bigR[TWOXTWO], double transposeR[TWOXTWO], int x);
 void writeToFile(const char filePath[LENGTH_FILE_PATH], double lambda[TWOXTWO], double bigR[TWOXTWO], double rLambdaRT[TWOXTWO], int x);
 
@@ -56,7 +56,6 @@ int main() {
 
 //this function has a lot of the code from my PA2.Pt4
 void calculations(double matrix[4], int x) {
-	bool domLambda = NULL;
 
 	double absLambda1 = 0;
 	double absLambda2 = 0;
@@ -75,6 +74,9 @@ void calculations(double matrix[4], int x) {
 
 	double eigenNormal1[2] = { 0 };
 	double eigenNormal2[2] = { 0 };
+
+	double eigenValue1 = 0;
+	double eigenValue2 = 0;
 
 	a = matrix[0];
 	b = matrix[1];
@@ -107,42 +109,30 @@ void calculations(double matrix[4], int x) {
 		absLambda2 = lambda2;
 	}
 
-	//figure out which lambda is the dominant one and calculate vectors
+	//dominant values
+
 	if (absLambda1 > absLambda2) {
-		printf("\nDominant eigenvalue: %.2f\n", lambda1);
-
-		getEigenVector(matrix, lambda1, eigenVector1);
-		getEigenVector(matrix, lambda2, eigenVector2);
-
-		printf("\nEigenvector: [%.2f, %.2f]\n", eigenVector1[0], eigenVector1[1]);
-
-		normalize(eigenVector1, eigenVector2, eigenNormal1, eigenNormal2);
-
-		printf("\nNormalized Eigenvector: [%.2f, %.2f]\n", eigenNormal1[0], eigenNormal1[1]);
-
-		domLambda = true;
+		eigenValue1 = lambda1;
+		eigenValue2 = lambda2;
 	}
 	else {
-		printf("\nDominant eigenvalue: %.2f\n", lambda2);
-
-		getEigenVector(matrix, lambda1, eigenVector1);
-		getEigenVector(matrix, lambda2, eigenVector2);
-
-		printf("\nEigenvector: [%.2f, %.2f]\n", eigenVector2[0], eigenVector2[1]);
-
-		normalize(eigenVector2, eigenVector1, eigenNormal2, eigenNormal1);
-
-		printf("\nNormalized Eigenvector: [%.2f, %.2f]\n", eigenNormal2[0], eigenNormal2[1]);
-
-		domLambda = false;
+		eigenValue1 = lambda2;
+		eigenValue2 = lambda1;
 	}
+	
+	getEigenVector(matrix, eigenValue1, eigenVector1);
+	getEigenVector(matrix, eigenValue2, eigenVector2);
 
-	//dominate will be true if lambda1 is the dominate - false if lambda2 is the dominate
+	printf("\nEigenvector: [%.2f, %.2f]\n", eigenVector1[0], eigenVector1[1]);
 
-	lambdaAndR(lambda1, lambda2, eigenNormal1, eigenNormal2, x, domLambda);
+	normalize(eigenVector1, eigenVector2, eigenNormal1, eigenNormal2);
+
+	printf("\nNormalized Eigenvector: [%.2f, %.2f]\n", eigenNormal1[0], eigenNormal1[1]);
+
+	lambdaAndR(lambda1, lambda2, eigenNormal1, eigenNormal2, x);
 }
 
-void lambdaAndR(double l1, double l2, double vector1[2], double vector2[2], int x, bool dominate) {
+void lambdaAndR(double l1, double l2, double vector1[2], double vector2[2], int x) {
 
 	double bigLambda[TWOXTWO] = { 0 };
 	double bigR[TWOXTWO] = { 0 };
@@ -153,20 +143,10 @@ void lambdaAndR(double l1, double l2, double vector1[2], double vector2[2], int 
 	bigLambda[2] = 0;
 	bigLambda[3] = l2;
 
-	//lambda 1 is dominate --> goes on left side
-	if (dominate) {
-		bigR[0] = vector1[0];
-		bigR[1] = vector1[1];
-		bigR[2] = vector2[0];
-		bigR[3] = vector2[1];
-	}
-	//lambda 2 is dominate --> goes on left side side
-	else {
-		bigR[0] = vector2[0];
-		bigR[1] = vector2[1];
-		bigR[2] = vector1[0];
-		bigR[3] = vector1[1];
-	}
+	bigR[0] = vector1[0];
+	bigR[1] = vector1[1];
+	bigR[2] = vector2[0];
+	bigR[3] = vector2[1];
 
 	transposeR[0] = vector1[0];
 	transposeR[1] = vector2[0];
@@ -230,6 +210,7 @@ void writeToFile(const char filePath[LENGTH_FILE_PATH], double lambda[TWOXTWO], 
 void getMatrix(double newMatrix[4], FILE* filePtr, const char path[LENGTH_FILE_PATH]){
 	
 	double placeholder[THREEXTHREE] = { 0 };
+	double temp[TWOXTWO] = { 0 };
 
 	filePtr = fopen(path, "r");
 
@@ -256,6 +237,18 @@ void getMatrix(double newMatrix[4], FILE* filePtr, const char path[LENGTH_FILE_P
 			k++;
 		}
 	}
+
+	//rearrange so it makes sense
+
+	temp[0] = newMatrix[0];
+	temp[1] = newMatrix[2];
+	temp[2] = newMatrix[1];
+	temp[3] = newMatrix[3];
+
+	newMatrix[0] = temp[0];
+	newMatrix[1] = temp[1];
+	newMatrix[2] = temp[2];
+	newMatrix[3] = temp[3];
 }
 //this function is from PA2.Pt4
 void getEigenVector(double ogMatrix[4], double lambda, double eigenVectors[2]) {
