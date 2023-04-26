@@ -36,7 +36,15 @@ void getPoints(double placeholder[MAX], FILE* filePtr, const char path[LENGTH_FI
 void createDivideArray(double placeholder[MAX]);
 void fillValues(double point[THREE], double norm[THREE], double dir[THREE], double temp[MAX]);
 void fillPoints(double temp[MAX], int i, double point1[THREE], double point2[THREE], double point3[THREE]);
+double pointLength(double point[THREE]);
+void subtractPoints(double point1[THREE], double point2[THREE], double total[THREE]);
+void addPoints(double point1[THREE], double point2[THREE], double total[THREE]);
 bool ifZero(double temp[MAX], int i);
+void multiplyPointScalar(double point[THREE], double scalar, double total[THREE]);
+void normalize(double point[THREE], double total[THREE]);
+void parallelProjection(double point[THREE], double ppoint[THREE], double planeDir[THREE], double projDir[THREE], double answer[THREE]);
+double dotProduct(double point1[THREE], double point2[THREE]);
+void perspectiveProj(double point[THREE], double ppoint[THREE], double planeDir[THREE], double answer[THREE]);
 
 int main(void) {
 
@@ -59,6 +67,90 @@ int main(void) {
     }
 
     return 0;
+}
+
+//equation: x' = ((q dot n) / (x dot n)) * x
+void perspectiveProj(double point[THREE], double ppoint[THREE], double planeDir[THREE], double answer[THREE]) {
+
+    double qdotn = 0;
+    double xdotn = 0;
+
+    qdotn = dotProduct(ppoint, planeDir);
+    xdotn = dotProduct(point, planeDir);
+
+    if (xdotn != 0) {
+        multiplyPointScalar(point, qdotn / xdotn, answer);
+    }
+}
+
+void normalize(double point[THREE], double total[THREE]) {
+
+    double pointsLength = 0;
+
+    pointsLength = pointLength(point);
+
+    total[0] = point[0] / pointsLength;
+    total[1] = point[1] / pointsLength;
+    total[2] = point[2] / pointsLength;
+}
+
+//equation: x' = x + (([q-x] dot n)/(v dot n)) * v
+void parallelProjection(double point[THREE], double ppoint[THREE], double planeDir[THREE], double projDir[THREE], double answer[THREE]) {
+
+    double qminusx[THREE] = { 0 };
+    double qxdotn = 0;
+    double qxnvn = 0;
+    double temp[THREE];
+
+    subtractPoints(ppoint, point, qminusx);
+
+    qxdotn = dotProduct(qminusx, planeDir);
+
+    qxnvn = qxdotn / (dotProduct(projDir, planeDir));
+
+    multiplyPointScalar(projDir, qxnvn, temp);
+
+    addPoints(point, temp, answer);
+}
+
+double dotProduct(double point1[THREE], double point2[THREE]) {
+
+    double total = 0;
+
+    total = point1[0] * point2[0] + point1[1] * point2[1] + point1[2] * point2[2];
+
+    return total;
+
+}
+
+void multiplyPointScalar(double point[THREE], double scalar, double total[THREE]) {
+
+    total[0] = point[0] * scalar;
+    total[1] = point[1] * scalar;
+    total[2] = point[2] * scalar;
+}
+
+void subtractPoints(double point1[THREE], double point2[THREE], double total[THREE]) {
+
+    total[0] = point1[0] - point2[0];
+    total[1] = point1[1] - point2[1];
+    total[2] = point1[2] - point2[2];
+}
+
+void addPoints(double point1[THREE], double point2[THREE], double total[THREE]) {
+
+    total[0] = point1[0] + point2[0];
+    total[1] = point1[1] + point2[1];
+    total[2] = point1[2] + point2[2];
+}
+
+double pointLength(double point[THREE]) {
+
+    double length = 0;
+
+    length = sqrt(pow(point[0], 2) + pow(point[1], 2) + pow(point[2], 2));
+
+    return length;
 }
 
 bool ifZero(double temp[MAX], int i) {
@@ -86,18 +178,21 @@ void fillPoints(double temp[MAX], int i, double point1[THREE], double point2[THR
 
 void fillValues(double point[THREE], double norm[THREE], double dir[THREE], double temp[MAX]) {
     //every three numbers a different array should be assigned
-   
-        point[0] = temp[0];
-        point[1] = temp[1];
-        point[2] = temp[2];
+    double normT[THREE] = {0};
+        
+    point[0] = temp[0];
+    point[1] = temp[1];
+    point[2] = temp[2];
 
-        norm[0] = temp[3];
-        norm[1] = temp[4];
-        norm[2] = temp[5];
+    normT[0] = temp[3];
+    normT[1] = temp[4];
+    normT[2] = temp[5];
 
-        dir[0] = temp[6];
-        dir[1] = temp[7];
-        dir[2] = temp[8];
+    dir[0] = temp[6];
+    dir[1] = temp[7];
+    dir[2] = temp[8];
+
+    normalize(normT, norm);
 }
 
 void createDivideArray(double placeholder[MAX]) {
