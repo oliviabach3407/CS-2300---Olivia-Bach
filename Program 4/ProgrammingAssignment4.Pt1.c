@@ -251,7 +251,6 @@ void getPoints(double placeholder[MAX], FILE* filePtr, const char path[LENGTH_FI
     }
 }
 
-
 //based off of my PA1.Pt1
 /*
 void writeToFile(const char filePath[LENGTH_FILE_PATH], double solution[TWOXONE], int result) {
