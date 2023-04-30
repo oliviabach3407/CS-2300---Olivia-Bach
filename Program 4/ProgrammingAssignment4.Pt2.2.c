@@ -1,14 +1,10 @@
 /*
-This is a projection problem. The first line of the input defines the plane and the
-projection direction (if it is parallel projection). Num11, Num12, and Num13 corresponds to the
-point on the plane and Num14, Num15, and Num16 defines the normal to the plane before
-normalization. If it is a parallel projection, Num17, Num18, Num19 defines the projection
-direction. The rest of the input lines define points where there are three points per line.
-First, let's program parallel projection; for each point, project it along the projection direction to
-into the plane. Second, let's implement perspective projection; for each point (let's say x), have
-the projection direction depend on the point coordinates and be that of the vector from the point
-to the origin (o-x = -x) and project the point into the plane. Output two separate files for the two
-sub-parts where each line includes three projected image points, similarly to the input file format.
+Second, the first line of the input defines a line defined by the two points, where Num11,
+Num12, and Num13 yields one point and Num14, Num15, and Num16 provides the other point
+coordinates. The rest of the lines on the input defines the three vertex points of a triangle plane (a
+bounded plane). If the input had K lines, there are K-1 triangles for testing. For each triangle, if it
+intersects with the line, find the point of intersection. If it does not intersect, output "Does not
+intersect." Generate a file for your output including K-1 lines for one triangle per line.
 */
 
 #include <stdlib.h>
@@ -25,7 +21,7 @@ sub-parts where each line includes three projected image points, similarly to th
 #define THREE 3
 
 //input files -- you might need to change the names depending on what test files you're using 
-const char FULL_FILE_PATH1[LENGTH_FILE_PATH] = "C:\\GithubRepos\\CS2060\\CS-2300---Olivia-Bach\\Program 4\\test_file_2.txt";
+const char FULL_FILE_PATH1[LENGTH_FILE_PATH] = "C:\\GithubRepos\\CS2060\\CS-2300---Olivia-Bach\\Program 4\\test_file.txt";
 const char FULL_FILE_PATH2[LENGTH_FILE_PATH] = "C:\\GithubRepos\\CS2060\\CS-2300---Olivia-Bach\\Program 4\\test_input_2.txt";
 const char FULL_FILE_PATH3[LENGTH_FILE_PATH] = "C:\\GithubRepos\\CS2060\\CS-2300---Olivia-Bach\\Program 4\\3D_test_input_1.txt";
 
@@ -42,10 +38,9 @@ void addPoints(double point1[THREE], double point2[THREE], double total[THREE]);
 bool ifZero(double temp[MAX], int i);
 void multiplyPointScalar(double point[THREE], double scalar, double total[THREE]);
 void normalize(double point[THREE], double total[THREE]);
-void parallelProjection(double point[THREE], double ppoint[THREE], double planeDir[THREE], double projDir[THREE], double answer[THREE]);
 double dotProduct(double point1[THREE], double point2[THREE]);
-void perspectiveProj(double point[THREE], double ppoint[THREE], double planeDir[THREE], double answer[THREE]);
-void writeToFile(const char filePath[LENGTH_FILE_PATH], double a11[THREE], double a12[THREE], double a13[THREE], double a21[THREE], double a22[THREE], double a23[THREE]);
+void crossProduct(double point1[THREE], double point2[THREE], double answer[THREE]);
+bool pointTriangle(double lPoint1[THREE], double lPoint2[THREE], double point1[THREE], double point2[THREE], double point3[THREE], double ans[THREE]);
 
 int main(void) {
 
@@ -63,18 +58,69 @@ int main(void) {
     return 0;
 }
 
-//equation: x' = ((q dot n) / (x dot n)) * x
-void perspectiveProj(double point[THREE], double ppoint[THREE], double planeDir[THREE], double answer[THREE]) {
+bool pointTriangle(double lPoint1[THREE], double lPoint2[THREE], double point1[THREE], double point2[THREE], double point3[THREE], double ans[THREE]) {
 
-    double qdotn = 0;
-    double xdotn = 0;
+    bool inTriangle = false;
 
-    qdotn = dotProduct(ppoint, planeDir);
-    xdotn = dotProduct(point, planeDir);
+    double vector1[THREE] = { 0 };
+    double vector2[THREE] = { 0 };
 
-    if (xdotn != 0) {
-        multiplyPointScalar(point, qdotn / xdotn, answer);
+    double cross[THREE] = { 0 };
+    double planeDir[THREE] = { 0 }; //normalized cross
+
+    double planePt[THREE] = { 0 };
+    double lineDir[THREE] = { 0 };
+
+    double distToLine = 0;
+
+    double intersectPoint[THREE] = { 0 };
+    double distVec[THREE] = { 0 };
+
+    double subtract1[THREE] = { 0 };
+    double subtract2[THREE] = { 0 };
+    double subtract3[THREE] = { 0 };
+
+    double dotProduct1 = 0;
+    double dotProduct2 = 0;
+
+    double vectorPlane = 0;
+    
+    double qMinusP[THREE] = { 0 };
+    double topParameter = 0;
+
+    subtractPoints(point1, point2, vector1);
+    subtractPoints(point1, point3, vector2);
+
+    crossProduct(vector1, vector2, cross);
+
+    normalize(cross, planeDir);
+
+    planePt[0] = point1[0];
+    planePt[1] = point1[1];
+    planePt[2] = point1[2];
+
+    vectorPlane = dotProduct(vector1, vector2); //denominator
+    subtractPoints(lPoint2, lPoint1, lineDir);
+
+    if (vectorPlane != 0) {
+        
+        subtractPoints(planePt, lPoint1, qMinusP);
+        topParameter = dotProduct(qMinusP, planeDir);
+        
+        distToLine = topParameter / vectorPlane;
+
+
+        
     }
+   
+
+}
+
+void crossProduct(double point1[THREE], double point2[THREE], double answer[THREE]) {
+
+    answer[0] = point1[1] * point2[2] - point2[1] * point1[2];
+    answer[1] = point1[2] * point2[0] - point2[2] * point1[0];
+    answer[2] = point1[0] * point2[1] - point2[0] * point1[1];
 }
 
 void normalize(double point[THREE], double total[THREE]) {
@@ -86,25 +132,6 @@ void normalize(double point[THREE], double total[THREE]) {
     total[0] = point[0] / pointsLength;
     total[1] = point[1] / pointsLength;
     total[2] = point[2] / pointsLength;
-}
-
-//equation: x' = x + (([q-x] dot n)/(v dot n)) * v
-void parallelProjection(double point[THREE], double ppoint[THREE], double planeDir[THREE], double projDir[THREE], double answer[THREE]) {
-
-    double qminusx[THREE] = { 0 };
-    double qxdotn = 0;
-    double qxnvn = 0;
-    double temp[THREE];
-
-    subtractPoints(ppoint, point, qminusx);
-
-    qxdotn = dotProduct(qminusx, planeDir);
-
-    qxnvn = qxdotn / (dotProduct(projDir, planeDir));
-
-    multiplyPointScalar(projDir, qxnvn, temp);
-
-    addPoints(point, temp, answer);
 }
 
 double dotProduct(double point1[THREE], double point2[THREE]) {
@@ -158,76 +185,62 @@ bool ifZero(double temp[MAX], int i) {
 void fillPoints(double temp[MAX], int i, double point1[THREE], double point2[THREE], double point3[THREE]) {
 
     point1[0] = temp[i];
-    point1[1] = temp[i+1];
-    point1[2] = temp[i+2];
+    point1[1] = temp[i + 1];
+    point1[2] = temp[i + 2];
 
-    point2[0] = temp[i+3];
-    point2[1] = temp[i+4];
-    point2[2] = temp[i+5];
+    point2[0] = temp[i + 3];
+    point2[1] = temp[i + 4];
+    point2[2] = temp[i + 5];
 
-    point3[0] = temp[i+6];
-    point3[1] = temp[i+7];
-    point3[2] = temp[i+8];
+    point3[0] = temp[i + 6];
+    point3[1] = temp[i + 7];
+    point3[2] = temp[i + 8];
 }
 
 void fillValues(double point[THREE], double norm[THREE], double dir[THREE], double temp[MAX]) {
     //every three numbers a different array should be assigned
-    double normT[THREE] = {0};
-        
+
     point[0] = temp[0];
     point[1] = temp[1];
     point[2] = temp[2];
 
-    normT[0] = temp[3];
-    normT[1] = temp[4];
-    normT[2] = temp[5];
+    norm[0] = temp[3];
+    norm[1] = temp[4];
+    norm[2] = temp[5];
 
     dir[0] = temp[6];
     dir[1] = temp[7];
     dir[2] = temp[8];
 
-    normalize(normT, norm);
 }
 
 void createDivideArray(double placeholder[MAX]) {
 
-    double point1[THREE] = { 0 };
-    double normal1[THREE] = { 0 };
+    double linePoint1[THREE] = { 0 };
+    double linePoint2[THREE] = { 0 };
     double direction1[THREE] = { 0 };
 
     double point2[THREE] = { 0 };
     double point3[THREE] = { 0 };
     double point4[THREE] = { 0 };
 
-    double answer11[THREE] = { 0 }; 
-    double answer12[THREE] = { 0 };
-    double answer13[THREE] = { 0 };
+    double answer[THREE] = { 0 };
 
-    double answer21[THREE] = { 0 };
-    double answer22[THREE] = { 0 };
-    double answer23[THREE] = { 0 };
+    bool hits = false;
 
     //cant dynamically assign the size of the array so work around that
 
-    fillValues(point1, normal1, direction1, placeholder);
+    fillValues(linePoint1, linePoint2, direction1, placeholder);
 
     for (int i = 9; i < MAX; i += 9) {
-        
+
         if (!ifZero(placeholder, i)) {
 
             fillPoints(placeholder, i, point2, point3, point4);
-
             //calculate function
-            perspectiveProj(point2, point1, normal1, answer11);
-            perspectiveProj(point3, point1, normal1, answer12);
-            perspectiveProj(point4, point1, normal1, answer13);
+            hits = pointTriangle(linePoint1, linePoint2, point2, point3, point4, answer);
+            
 
-            parallelProjection(point2, point1, normal1, direction1, answer21);
-            parallelProjection(point3, point1, normal1, direction1, answer22);
-            parallelProjection(point4, point1, normal1, direction1, answer23);
-
-            writeToFile(FILE_PATH, answer11, answer12, answer13, answer21, answer22, answer23);
-           
         }
         else {
 
@@ -254,25 +267,27 @@ void getPoints(double placeholder[MAX], FILE* filePtr, const char path[LENGTH_FI
 }
 
 //based off of my PA1.Pt1
-void writeToFile(const char filePath[LENGTH_FILE_PATH], double a11[THREE], double a12[THREE], double a13[THREE], double a21[THREE], double a22[THREE], double a23[THREE]) {
+/*
+void writeToFile(const char filePath[LENGTH_FILE_PATH], double solution[TWOXONE], int result) {
 
     char fullFilePath1[LENGTH_FILE_PATH];
-    char fullFilePath2[LENGTH_FILE_PATH];
 
-    FILE* filePtr1;
-    FILE* filePtr2;
+    FILE* filePtr3;
 
-    sprintf(fullFilePath1, "%spart1-perspective", filePath);
-    filePtr1 = fopen(fullFilePath1, "a");
+    sprintf(fullFilePath1, "%spart1.answer%d", filePath, result);
+    filePtr3 = fopen(fullFilePath1, "w");
 
-    fprintf(filePtr1, "\n%.2lf %.2lf %.2lf %.2lf %.2lf %.2lf %.2lf %.2lf %.2lf", a11[0], a11[1], a11[2],
-        a12[0], a12[1], a12[2],
-        a13[0], a13[1], a13[2]);
+    if (result == 1) {
+        fprintf(filePtr3, "System underdetermined\n");
+    }
+    else if (result == 2) {
+        fprintf(filePtr3, "System inconsistent\n");
+    }
+    else {
+        fprintf(filePtr3, "%.4lf\n%.4lf", solution[0], solution[1]);
+    }
 
-    sprintf(fullFilePath2, "%spart1-parallel", filePath);
-    filePtr2 = fopen(fullFilePath2, "a");
 
-    fprintf(filePtr2, "\n%.2lf %.2lf %.2lf %.2lf %.2lf %.2lf %.2lf %.2lf %.2lf", a21[0], a21[1], a21[2],
-        a22[0], a22[1], a22[2],
-        a23[0], a23[1], a23[2]);
+    fclose(filePtr3);
 }
+*/
