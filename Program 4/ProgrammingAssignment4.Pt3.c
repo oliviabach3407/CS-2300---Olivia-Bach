@@ -28,11 +28,9 @@ these in separate lines.
 #define TOLERANCE 1e-6
 
 //input file -- you might need to change the names depending on what test files you're using 
-const char FULL_FILE_PATH1[LENGTH_FILE_PATH] = "C:\\GithubRepos\\CS2060\\CS-2300---Olivia-Bach\\Program 4\\InputHW4_Part3";
+const char FULL_FILE_PATH1[LENGTH_FILE_PATH] = "C:\\GithubRepos\\CS2060\\CS-2300---Olivia-Bach\\Program 4\\test_input_p3.txt";
 
 void getPoints(double placeholder[MAX], FILE* filePtr, const char path[LENGTH_FILE_PATH]);
-void createDivideArray(double placeholder[MAX]);
-void fillPoints(double temp[MAX], int i, double point1[THREE], double point2[THREE], double point3[THREE]);
 double pointLength(double point[THREE]);
 void subtractPoints(double point1[THREE], double point2[THREE], double total[THREE]);
 void addPoints(double point1[THREE], double point2[THREE], double total[THREE]);
@@ -40,9 +38,9 @@ bool ifZero(double temp[MAX], int i);
 void multiplyPointScalar(double point[THREE], double scalar, double total[THREE]);
 void normalize(double point[THREE], double total[THREE]);
 double dotProduct(double point1[THREE], double point2[THREE]);
-void writeToFile(const char filePath[LENGTH_FILE_PATH], double answer);
 int getSize(double temp[MAX]);
 bool isStochastic(double temp[MAX], int rowcolumn);
+void powerMethod(double* temp, int dimension, double* eigenvector, int* index_vector);
 
 int main() {
 
@@ -57,10 +55,28 @@ int main() {
     size = sqrt(getSize(temp)); 
 
     //--Output both i) the eigenvector for the webpagesand ii) the vector whose elements are the
-    //webpage indices after sorting from the highest rank to the lowest rank; the output should include
-    //these in separate lines.
+    //webpage indices after sorting from the highest rank to the lowest rank; the output should include //these in separate lines.
+
     if (isStochastic(temp, size)) {
 
+        //dynamically allocate the size and memory
+        double* eigenvectors = malloc(size * sizeof(double));
+        int* indexes = malloc(size * sizeof(int)); 
+
+        powerMethod(temp, size, eigenvectors, indexes);
+
+        for (int i = 0; i < size; i++) {
+            printf("%.2lf  ", eigenvectors[i]);
+        }
+
+        puts("\n");
+
+        for (int i = 0; i < size; i++) {
+            printf("%d  ", indexes[i]); 
+        }
+
+        free(eigenvectors);
+        free(indexes);
     }
     //-- Print "Invalid input" (for example, the input file includes a negative number or the matrix is
     //not stochastic), or
@@ -68,14 +84,76 @@ int main() {
         puts("\nInvalid input.");
     }
 
-
-
+    return 0;
 }
 
+void powerMethod(double* temp, int dimension, double* eigenvector, int* index_vector) {
+
+    // initialize eigenvector to a uniform distribution
+    double norm = sqrt(dimension);
+    for (int i = 0; i < dimension; i++) {
+        eigenvector[i] = 1.0 / norm;
+    }
+
+    // iterate until convergence or max iterations reached
+    int iter = 0;
+    double error = TOLERANCE + 1.0;
+    while (error > TOLERANCE && iter < MAX_ITERATIONS) {
+        // calculate matrix-vector product
+        double* new_vector = malloc(dimension * sizeof(double));
+
+        for (int i = 0; i < dimension; i++) {
+            double sum = 0.0;
+            for (int j = 0; j < dimension; j++) {
+                sum += temp[i * dimension + j] * eigenvector[j];
+            }
+            new_vector[i] = sum;
+        }
+
+        // normalize and calculate error
+        double new_norm = 0.0;
+        for (int i = 0; i < dimension; i++) {
+            new_norm += new_vector[i] * new_vector[i];
+        }
+        new_norm = sqrt(new_norm);
+        error = 0.0;
+        for (int i = 0; i < dimension; i++) {
+            double diff = fabs(new_vector[i] / new_norm - eigenvector[i] / norm);
+            if (diff > error) {
+                error = diff;
+            }
+            eigenvector[i] = new_vector[i] / new_norm;
+        }
+        norm = new_norm;
+        iter++;
+
+        free(new_vector);
+    }
+
+    // calculate index vector by sorting eigenvector
+    for (int i = 0; i < dimension; i++) {
+        index_vector[i] = i;
+    }
+    for (int i = 0; i < dimension - 1; i++) {
+        for (int j = i + 1; j < dimension; j++) {
+            if (eigenvector[index_vector[i]] < eigenvector[index_vector[j]]) {
+                int temp_index = index_vector[i];
+                index_vector[i] = index_vector[j];
+                index_vector[j] = temp_index;
+            }
+        }
+    }
+}
+
+
 //no negatives + columns/rows add to 1
-bool isStochastic(double temp[], int rowcolumn) {
+bool isStochastic(double temp[MAX], int rowcolumn) {
+
+    double epsilon = 0.5; //tolerance range -- I had to make this pretty large (wouldn't work with 0.1, 0.01, 0.001, etc)
 
     bool stochastic = true;
+    bool rowStochastic = true;
+    bool colStochastic = true;
 
     for (int i = 0; i < rowcolumn; i++) {
         double row_sum = 0;
@@ -94,11 +172,24 @@ bool isStochastic(double temp[], int rowcolumn) {
             column_sum += temp[j * rowcolumn + i];
         }
 
-        //check that the sum of the row and the column is equal to 1
-        if (row_sum != 1 || column_sum != 1) {
-            stochastic = false;
-            return stochastic;
+        //checking based on tolerance
+        if (fabs(row_sum - 1.0) > epsilon) {
+            //if row_sum is not equal to 1, the matrix is not stochastic
+            rowStochastic = false;
         }
+
+        if (fabs(column_sum - 1.0) > epsilon) {
+            //if column_sum is not equal to 1, the matrix is not stochastic
+            colStochastic = false;
+        }
+    }
+
+    //if either the rows are good or the columns are good, then it's stochastic
+    if (rowStochastic || colStochastic) {
+        stochastic = true;
+    }
+    else {
+        stochastic = false;
     }
 
     return stochastic;
