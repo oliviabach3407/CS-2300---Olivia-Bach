@@ -28,7 +28,7 @@ these in separate lines.
 #define TOLERANCE 1e-6
 
 //input file -- you might need to change the names depending on what test files you're using 
-const char FULL_FILE_PATH1[LENGTH_FILE_PATH] = "C:\\GithubRepos\\CS2060\\CS-2300---Olivia-Bach\\Program 4\\input3.txt";
+const char FULL_FILE_PATH1[LENGTH_FILE_PATH] = "C:\\GithubRepos\\CS2060\\CS-2300---Olivia-Bach\\Program 4\\input_3.txt";
 
 void getPoints(double placeholder[MAX], FILE* filePtr, const char path[LENGTH_FILE_PATH]);
 double pointLength(double point[THREE]);
