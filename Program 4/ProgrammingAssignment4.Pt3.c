@@ -22,7 +22,7 @@ these in separate lines.
 #include <math.h>
 
 #define LENGTH_FILE_PATH 100
-#define MAX 99
+#define MAX 1000
 #define THREE 3
 #define MAX_ITERATIONS 1000
 #define TOLERANCE 1e-6
@@ -31,13 +31,7 @@ these in separate lines.
 const char FULL_FILE_PATH1[LENGTH_FILE_PATH] = "C:\\GithubRepos\\CS2060\\CS-2300---Olivia-Bach\\Program 4\\input_3.txt";
 
 void getPoints(double placeholder[MAX], FILE* filePtr, const char path[LENGTH_FILE_PATH]);
-double pointLength(double point[THREE]);
-void subtractPoints(double point1[THREE], double point2[THREE], double total[THREE]);
-void addPoints(double point1[THREE], double point2[THREE], double total[THREE]);
 bool ifZero(double temp[MAX], int i);
-void multiplyPointScalar(double point[THREE], double scalar, double total[THREE]);
-void normalize(double point[THREE], double total[THREE]);
-double dotProduct(double point1[THREE], double point2[THREE]);
 int getSize(double temp[MAX]);
 bool isStochastic(double temp[MAX], int rowcolumn);
 void powerMethod(double* temp, int dimension, double* eigenvector, int* index_vector);
@@ -61,17 +55,19 @@ int main() {
     if (isStochastic(temp, size)) {
 
         //dynamically allocate the size and memory
-        double* eigenvectors = malloc(size * sizeof(double));
-        int* indexes = malloc(size * sizeof(int)); 
+        double* eigenvectors = malloc((size+1) * sizeof(double));
+        int* indexes = malloc((size+1) * sizeof(int)); 
 
         powerMethod(temp, size, eigenvectors, indexes);
 
+        //printing eigen vectors
         for (int i = 0; i < size; i++) {
             printf("%.4lf  ", eigenvectors[i]);
         }
 
         puts("\n");
 
+        //printing indexes
         for (int i = 0; i < size; i++) {
             printf("%d  ", indexes[i]); 
         }
@@ -88,12 +84,21 @@ int main() {
     return 0;
 }
 
+//just used the formulas from my notes to figure this one out - lots of trial and error
 void powerMethod(double* temp, int dimension, double* eigenvector, int* index_vector) {
     int iterations = 0;
     double* starting = NULL;
+    double* sortedEigen = NULL;
+
+    //initialize the eigenvector and index_vector arrays
+    for (int i = 0; i < dimension; i++) {
+        eigenvector[i] = 0.0;
+        index_vector[i] = i + 1; // modify index_vector to start at 1
+    }
 
     // dynamically allocate memory for the array of size dimension
     starting = (double*)malloc(dimension * sizeof(double));
+    sortedEigen = (double*)malloc(dimension * sizeof(double));
 
     // need to initialize it with all 1's as a sample starting array
     for (int i = 0; i < dimension; i++) {
@@ -109,10 +114,10 @@ void powerMethod(double* temp, int dimension, double* eigenvector, int* index_ve
 
     while (iterations < MAX_ITERATIONS) {
 
-        // multiply temp and starting 
+        //multiply temp and starting 
         multiplyMatrices(dimension, temp, starting, next);
 
-        // calculate the largest element of next, which is the largest eigenvalue
+        //calculate the largest element of next, which is the largest eigenvalue
         double largest = next[0];
         for (int i = 1; i < dimension; i++) {
             if (fabs(next[i]) > fabs(largest)) {
@@ -120,43 +125,53 @@ void powerMethod(double* temp, int dimension, double* eigenvector, int* index_ve
             }
         }
 
-        // normalize next to get the eigenvector
+        //normalize next to get the eigenvector
         for (int i = 0; i < dimension; i++) {
             next[i] = next[i] / largest;
         }
 
-        // update starting to be the new eigenvector
+        //update starting to be the new eigenvector
         memcpy(starting, next, dimension * sizeof(double));
 
         iterations++;
     }
 
-    // copy the eigenvector into the eigenvector array
+    //copy the eigenvector into the eigenvector array
     memcpy(eigenvector, next, dimension * sizeof(double));
 
-    // calculate index vector by sorting eigenvector with indices
-    for (int i = 0; i < dimension; i++) {
-        index_vector[i] = i;
+    //copy the eigenvectors into sortedEigen so that we can sort
+    memcpy(sortedEigen, eigenvector, dimension * sizeof(double));
+
+    //calculate index vector by sorting eigenvector with indices
+    for (int i = 1; i <= dimension; i++) { // modify index vector to start at 1
+        index_vector[i - 1] = i;
     }
+    //sorting the eigenvectors
     for (int i = 0; i < dimension - 1; i++) {
         for (int j = i + 1; j < dimension; j++) {
-            if (eigenvector[i] < eigenvector[j]) {
-                double temp_eigenvector = eigenvector[i];
-                eigenvector[i] = eigenvector[j];
-                eigenvector[j] = temp_eigenvector;
-
-                int temp_index = index_vector[i];
-                index_vector[i] = index_vector[j];
-                index_vector[j] = temp_index;
+            if (sortedEigen[i] < sortedEigen[j]) {
+                double temp_eigen = sortedEigen[i];
+                sortedEigen[i] = sortedEigen[j];
+                sortedEigen[j] = temp_eigen;
             }
         }
     }
 
-    // free dynamically allocated memory
+    //find index vector based on sortedEigen
+    for (int i = 0; i < dimension; i++) {
+        for (int j = 0; j < dimension; j++) {
+            if (sortedEigen[i] == eigenvector[j])
+            {
+                index_vector[i] = j+1;
+            }
+        }
+    }
+
+    //free dynamically allocated memory
     free(starting);
     free(next);
+    free(sortedEigen);
 }
-
 
 //I had to use a combination of my notes from CS2060 and this resource 
 //https://www.geeksforgeeks.org/dynamic-memory-allocation-in-c-using-malloc-calloc-free-and-realloc/
@@ -262,57 +277,6 @@ int getSize(double temp[MAX]) {
     }
 
     return count;
-}
-
-void normalize(double point[THREE], double total[THREE]) {
-
-    double pointsLength = 0;
-
-    pointsLength = pointLength(point);
-
-    total[0] = point[0] / pointsLength;
-    total[1] = point[1] / pointsLength;
-    total[2] = point[2] / pointsLength;
-}
-
-double dotProduct(double point1[THREE], double point2[THREE]) {
-
-    double total = 0;
-
-    total = point1[0] * point2[0] + point1[1] * point2[1] + point1[2] * point2[2];
-
-    return total;
-
-}
-
-void multiplyPointScalar(double point[THREE], double scalar, double total[THREE]) {
-
-    total[0] = point[0] * scalar;
-    total[1] = point[1] * scalar;
-    total[2] = point[2] * scalar;
-}
-
-void subtractPoints(double point1[THREE], double point2[THREE], double total[THREE]) {
-
-    total[0] = point1[0] - point2[0];
-    total[1] = point1[1] - point2[1];
-    total[2] = point1[2] - point2[2];
-}
-
-void addPoints(double point1[THREE], double point2[THREE], double total[THREE]) {
-
-    total[0] = point1[0] + point2[0];
-    total[1] = point1[1] + point2[1];
-    total[2] = point1[2] + point2[2];
-}
-
-double pointLength(double point[THREE]) {
-
-    double length = 0;
-
-    length = sqrt(pow(point[0], 2) + pow(point[1], 2) + pow(point[2], 2));
-
-    return length;
 }
 
 bool ifZero(double temp[MAX], int i) {
