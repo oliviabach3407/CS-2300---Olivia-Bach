@@ -25,7 +25,9 @@ sub-parts where each line includes three projected image points, similarly to th
 #define THREE 3
 
 //input files -- you might need to change the names depending on what test files you're using 
+//I've edited my code so that the output file will be overwritten each time you run this program (same output file no matter what the input file is)
 const char FULL_FILE_PATH1[LENGTH_FILE_PATH] = "C:\\GithubRepos\\CS2060\\CS-2300---Olivia-Bach\\Program 4\\input_1.txt";
+//const char FULL_FILE_PATH1[LENGTH_FILE_PATH] = "C:\\GithubRepos\\CS2060\\CS-2300---Olivia-Bach\\Program 4\\input_2.txt";
 
 //output files -- this is where the output is being sent
 const char FILE_PATH[] = "C:\\GithubRepos\\CS2060\\CS-2300---Olivia-Bach\\Program 4\\";
@@ -44,6 +46,7 @@ void parallelProjection(double point[THREE], double ppoint[THREE], double planeD
 double dotProduct(double point1[THREE], double point2[THREE]);
 void perspectiveProj(double point[THREE], double ppoint[THREE], double planeDir[THREE], double answer[THREE]);
 void writeToFile(const char filePath[LENGTH_FILE_PATH], double a11[THREE], double a12[THREE], double a13[THREE], double a21[THREE], double a22[THREE], double a23[THREE]);
+void overwrite(const char filePath[LENGTH_FILE_PATH], FILE* filePtr, const char path[LENGTH_FILE_PATH]);
 
 int main(void) {
 
@@ -273,4 +276,18 @@ void writeToFile(const char filePath[LENGTH_FILE_PATH], double a11[THREE], doubl
     fprintf(filePtr2, "\n%.2lf %.2lf %.2lf %.2lf %.2lf %.2lf %.2lf %.2lf %.2lf", a21[0], a21[1], a21[2],
         a22[0], a22[1], a22[2],
         a23[0], a23[1], a23[2]);
+}
+
+void overwrite(const char filePath[LENGTH_FILE_PATH], FILE* filePtr, const char path[LENGTH_FILE_PATH]) {
+
+    char fullFilePath1[LENGTH_FILE_PATH];
+
+    FILE* filePtr3;
+
+    sprintf(fullFilePath1, "%spart2-sub2", filePath);
+    filePtr3 = fopen(fullFilePath1, "w");
+
+    //simply opening the file so that I can overwrite the whole thing 
+
+    fclose(filePtr3);
 }

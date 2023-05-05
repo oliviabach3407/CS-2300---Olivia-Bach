@@ -21,15 +21,15 @@ intersect." Generate a file for your output including K-1 lines for one triangle
 #define THREE 3
 
 //input files -- you might need to change the names depending on what test files you're using 
-const char FULL_FILE_PATH1[LENGTH_FILE_PATH] = "C:\\GithubRepos\\CS2060\\CS-2300---Olivia-Bach\\Program 4\\test_file.txt";
-const char FULL_FILE_PATH2[LENGTH_FILE_PATH] = "C:\\GithubRepos\\CS2060\\CS-2300---Olivia-Bach\\Program 4\\test_input_2.txt";
-const char FULL_FILE_PATH3[LENGTH_FILE_PATH] = "C:\\GithubRepos\\CS2060\\CS-2300---Olivia-Bach\\Program 4\\3D_test_input_1.txt";
+//I've edited my code so that the output file will be overwritten each time you run this program (same output file no matter what the input file is)
+const char FULL_FILE_PATH1[LENGTH_FILE_PATH] = "C:\\GithubRepos\\CS2060\\CS-2300---Olivia-Bach\\Program 4\\input_1.txt";
+//const char FULL_FILE_PATH1[LENGTH_FILE_PATH] = "C:\\GithubRepos\\CS2060\\CS-2300---Olivia-Bach\\Program 4\\input_2.txt";
 
-//output files -- this is where the output is being sent
+//output file -- this is where the output is being sent
 const char FILE_PATH[] = "C:\\GithubRepos\\CS2060\\CS-2300---Olivia-Bach\\Program 4\\";
 
 void getPoints(double placeholder[MAX], FILE* filePtr, const char path[LENGTH_FILE_PATH]);
-void createDivideArray(double placeholder[MAX]);
+void createDivideArray(double placeholder[MAX], FILE* filePtr, const char path[LENGTH_FILE_PATH]);
 void fillValues(double point[THREE], double norm[THREE], double dir[THREE], double temp[MAX]);
 void fillPoints(double temp[MAX], int i, double point1[THREE], double point2[THREE], double point3[THREE]);
 double pointLength(double point[THREE]);
@@ -40,7 +40,11 @@ void multiplyPointScalar(double point[THREE], double scalar, double total[THREE]
 void normalize(double point[THREE], double total[THREE]);
 double dotProduct(double point1[THREE], double point2[THREE]);
 void crossProduct(double point1[THREE], double point2[THREE], double answer[THREE]);
-bool pointTriangle(double lPoint1[THREE], double lPoint2[THREE], double point1[THREE], double point2[THREE], double point3[THREE], double ans[THREE]);
+void intersection(double lPoint1[THREE], double lPoint2[THREE], double point1[THREE], double point2[THREE], double point3[THREE], double ans[THREE]);
+void distPointLine(double point1[THREE], double point2[THREE], double point3[THREE], double ans[THREE]);
+double distTwoPoints(double point1[THREE], double point2[THREE]);
+void writeToFile(const char filePath[LENGTH_FILE_PATH], FILE* filePtr, double ans[THREE], bool intersects);
+void overwrite(const char filePath[LENGTH_FILE_PATH], FILE* filePtr, const char path[LENGTH_FILE_PATH]);
 
 int main(void) {
 
@@ -48,19 +52,70 @@ int main(void) {
 
     FILE* filePtr1 = 0;
 
+    overwrite(FILE_PATH, filePtr1, FULL_FILE_PATH1);
+
     getPoints(temp, filePtr1, FULL_FILE_PATH1);
 
     //this one will have to call all the other functions inside it
-    createDivideArray(temp);
-
-    //NEED TO DO FILES
+    createDivideArray(temp, filePtr1, FULL_FILE_PATH1);
 
     return 0;
 }
 
-bool pointTriangle(double lPoint1[THREE], double lPoint2[THREE], double point1[THREE], double point2[THREE], double point3[THREE], double ans[THREE]) {
+//determining if the point on the plane is within the boundaries of the triangle
+bool boundsCheck(double lPoint1[THREE], double lPoint2[THREE], double point1[THREE], double point2[THREE], double point3[THREE], double ans[THREE]) {
 
-    bool inTriangle = false;
+    double pointOnPlane1[THREE] = { 0 };
+    double pointOnPlane2[THREE] = { 0 };
+
+    double subtract1[THREE] = { 0 };
+    double subtract2[THREE] = { 0 };
+
+    double add1[THREE] = { 0 };
+    double add2[THREE] = { 0 };
+
+    double u1 = 0;
+    double u2 = 0;
+
+    bool intersects = false;
+
+    distPointLine(point1, point2, ans, pointOnPlane1);
+    distPointLine(point1, point3, ans, pointOnPlane2);
+
+    subtractPoints(point2, pointOnPlane1, subtract1);
+    subtractPoints(point3, pointOnPlane2, subtract2);
+
+    addPoints(point1, subtract1, add1);
+    addPoints(point1, subtract2, add2);
+
+    u1 = distTwoPoints(point1, add1);
+    u2 = distTwoPoints(point1, add2);
+
+    if (0 <= u1 && u1 <= 1 && 0 <= u2 && u2 <= 1 && u1 + u2 <= 1) {
+        intersects = true;
+    }
+
+    return intersects;
+}
+
+void intersection(double lPoint1[THREE], double lPoint2[THREE], double point1[THREE], double point2[THREE], double point3[THREE], double ans[THREE]) {
+
+    /*
+    Intersection Point = p + tv
+    Intersection Point = p1 + u1(p2 - p1) + u2(p3 - p1)
+    Intersection Point = u1p2 + u2p3 + (1 - u1 - u2)p1
+
+    plane point = q, line point = p
+
+    Equation for intersection:
+
+    t = [q - p] dot n
+         -----------
+          v dot n
+
+    Plane = x1 + x2 + x3 + c = 0
+    (parametric form)
+    */
 
     double vector1[THREE] = { 0 };
     double vector2[THREE] = { 0 };
@@ -72,47 +127,58 @@ bool pointTriangle(double lPoint1[THREE], double lPoint2[THREE], double point1[T
     double lineDir[THREE] = { 0 };
 
     double distToLine = 0;
-
+  
     double intersectPoint[THREE] = { 0 };
     double distVec[THREE] = { 0 };
-
-    double subtract1[THREE] = { 0 };
-    double subtract2[THREE] = { 0 };
-    double subtract3[THREE] = { 0 };
-
-    double dotProduct1 = 0;
-    double dotProduct2 = 0;
 
     double vectorPlane = 0;
     
     double qMinusP[THREE] = { 0 };
     double topParameter = 0;
 
+    //getting vectors from the points given
     subtractPoints(point1, point2, vector1);
     subtractPoints(point1, point3, vector2);
 
+    //plane direction (before normalization)
     crossProduct(vector1, vector2, cross);
 
+    //plane direction (after normalization)
     normalize(cross, planeDir);
 
+    //copying values over
     planePt[0] = point1[0];
     planePt[1] = point1[1];
     planePt[2] = point1[2];
-
-    vectorPlane = dotProduct(vector1, vector2); //denominator
+    
+    //getting denominator of equation
+    //v dot n
+    vectorPlane = dotProduct(vector1, vector2);
     subtractPoints(lPoint2, lPoint1, lineDir);
 
     if (vectorPlane != 0) {
         
+        //[q - p] dot n
+
+        //getting q - p
         subtractPoints(planePt, lPoint1, qMinusP);
+        //dotting that with n
         topParameter = dotProduct(qMinusP, planeDir);
         
+        //dividing numerator by denominator
         distToLine = topParameter / vectorPlane;
-
-
-        
     }
-   
+    else {
+
+    }
+
+    //position of the point (where is it on the plane?)
+    multiplyPointScalar(vector1, distToLine, distVec);
+
+    addPoints(lPoint1, distVec, intersectPoint);
+
+    //copying answer from intersectPoint to ans
+    memcpy(ans, intersectPoint, THREE);
 
 }
 
@@ -121,6 +187,33 @@ void crossProduct(double point1[THREE], double point2[THREE], double answer[THRE
     answer[0] = point1[1] * point2[2] - point2[1] * point1[2];
     answer[1] = point1[2] * point2[0] - point2[2] * point1[0];
     answer[2] = point1[0] * point2[1] - point2[0] * point1[1];
+}
+
+void distPointLine(double point1[THREE], double point2[THREE], double point3[THREE], double ans[THREE]) {
+
+    double subtract1[THREE] = { 0 };
+    double subtract2[THREE] = { 0 };
+    double subtract3[THREE] = { 0 };
+
+    double dotProd = 0;
+    double scalMagnitude = 0;
+
+    subtractPoints(point2, point1, subtract1);
+    subtractPoints(point1, point3, subtract2);
+
+    dotProd = dotProduct(subtract1, subtract1);
+
+    if (dotProd == 0) {
+        
+        memcpy(ans, point1, THREE);
+    }
+    else {
+
+        scalMagnitude = dotProduct(subtract1, subtract2) / dotProd;
+        subtractPoints(point1, subtract1, subtract3);
+
+        multiplyPointScalar(subtract3, scalMagnitude, ans);
+    }
 }
 
 void normalize(double point[THREE], double total[THREE]) {
@@ -163,6 +256,17 @@ void addPoints(double point1[THREE], double point2[THREE], double total[THREE]) 
     total[0] = point1[0] + point2[0];
     total[1] = point1[1] + point2[1];
     total[2] = point1[2] + point2[2];
+}
+
+double distTwoPoints(double point1[THREE], double point2[THREE]) {
+
+    double temp[THREE] = { 0 };
+    double length = 0;
+
+    subtractPoints(point1, point2, temp);
+    length = pointLength(temp);
+
+    return length;
 }
 
 double pointLength(double point[THREE]) {
@@ -214,7 +318,7 @@ void fillValues(double point[THREE], double norm[THREE], double dir[THREE], doub
 
 }
 
-void createDivideArray(double placeholder[MAX]) {
+void createDivideArray(double placeholder[MAX], FILE* filePtr, const char path[LENGTH_FILE_PATH]) {
 
     double linePoint1[THREE] = { 0 };
     double linePoint2[THREE] = { 0 };
@@ -238,14 +342,13 @@ void createDivideArray(double placeholder[MAX]) {
 
             fillPoints(placeholder, i, point2, point3, point4);
             //calculate function
-            hits = pointTriangle(linePoint1, linePoint2, point2, point3, point4, answer);
-            
-
+            intersection(linePoint1, linePoint2, point2, point3, point4, answer);
+            hits = boundsCheck(linePoint1, linePoint2, point2, point3, point4, answer);
+            writeToFile(FILE_PATH, filePtr, answer, hits);
         }
         else {
 
         }
-
     }
 }
 
@@ -267,27 +370,41 @@ void getPoints(double placeholder[MAX], FILE* filePtr, const char path[LENGTH_FI
 }
 
 //based off of my PA1.Pt1
-/*
-void writeToFile(const char filePath[LENGTH_FILE_PATH], double solution[TWOXONE], int result) {
+void writeToFile(const char filePath[LENGTH_FILE_PATH], FILE* filePtr, double ans[THREE], bool intersects) {
 
     char fullFilePath1[LENGTH_FILE_PATH];
 
     FILE* filePtr3;
 
-    sprintf(fullFilePath1, "%spart1.answer%d", filePath, result);
-    filePtr3 = fopen(fullFilePath1, "w");
+    sprintf(fullFilePath1, "%spart2-sub2", filePath);
+    filePtr3 = fopen(fullFilePath1, "a");
 
-    if (result == 1) {
-        fprintf(filePtr3, "System underdetermined\n");
-    }
-    else if (result == 2) {
-        fprintf(filePtr3, "System inconsistent\n");
+    if (intersects) {
+
+        fprintf(filePtr3, "\n");
+
+        for (int i = 0; i < THREE; i++) {
+            fprintf(filePtr3, "%.2lf ", ans[i]);
+        }
     }
     else {
-        fprintf(filePtr3, "%.4lf\n%.4lf", solution[0], solution[1]);
+        fprintf(filePtr3, "\nDoes not intersect.");
     }
+    
+    fclose(filePtr3);
+}
 
+//clears any file that had that name previously
+void overwrite(const char filePath[LENGTH_FILE_PATH], FILE* filePtr, const char path[LENGTH_FILE_PATH]) {
+
+    char fullFilePath1[LENGTH_FILE_PATH];
+
+    FILE* filePtr3;
+
+    sprintf(fullFilePath1, "%spart2-sub2", filePath);
+    filePtr3 = fopen(fullFilePath1, "w");
+
+    //simply opening the file so that I can overwrite the whole thing 
 
     fclose(filePtr3);
 }
-*/

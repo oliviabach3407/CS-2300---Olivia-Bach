@@ -41,6 +41,7 @@ double dotProduct(double point1[THREE], double point2[THREE]);
 int getSize(double temp[MAX]);
 bool isStochastic(double temp[MAX], int rowcolumn);
 void powerMethod(double* temp, int dimension, double* eigenvector, int* index_vector);
+void multiplyMatrices(int dim, double mat1[], double mat2[], double answer[]);
 
 int main() {
 
@@ -66,7 +67,7 @@ int main() {
         powerMethod(temp, size, eigenvectors, indexes);
 
         for (int i = 0; i < size; i++) {
-            printf("%.2lf  ", eigenvectors[i]);
+            printf("%.4lf  ", eigenvectors[i]);
         }
 
         puts("\n");
@@ -88,63 +89,114 @@ int main() {
 }
 
 void powerMethod(double* temp, int dimension, double* eigenvector, int* index_vector) {
+    int iterations = 0;
+    double* starting = NULL;
 
-    // initialize eigenvector to a uniform distribution
-    double norm = sqrt(dimension);
+    // dynamically allocate memory for the array of size dimension
+    starting = (double*)malloc(dimension * sizeof(double));
+
+    // need to initialize it with all 1's as a sample starting array
     for (int i = 0; i < dimension; i++) {
-        eigenvector[i] = 1.0 / norm;
+        starting[i] = 1;
     }
 
-    // iterate until convergence or max iterations reached
-    int iter = 0;
-    double error = TOLERANCE + 1.0;
-    while (error > TOLERANCE && iter < MAX_ITERATIONS) {
-        // calculate matrix-vector product
-        double* new_vector = malloc(dimension * sizeof(double));
-
-        for (int i = 0; i < dimension; i++) {
-            double sum = 0.0;
-            for (int j = 0; j < dimension; j++) {
-                sum += temp[i * dimension + j] * eigenvector[j];
-            }
-            new_vector[i] = sum;
-        }
-
-        // normalize and calculate error
-        double new_norm = 0.0;
-        for (int i = 0; i < dimension; i++) {
-            new_norm += new_vector[i] * new_vector[i];
-        }
-        new_norm = sqrt(new_norm);
-        error = 0.0;
-        for (int i = 0; i < dimension; i++) {
-            double diff = fabs(new_vector[i] / new_norm - eigenvector[i] / norm);
-            if (diff > error) {
-                error = diff;
-            }
-            eigenvector[i] = new_vector[i] / new_norm;
-        }
-        norm = new_norm;
-        iter++;
-
-        free(new_vector);
+    //initialize to 0
+    double* next = NULL;
+    next = (double*)malloc(dimension * sizeof(double));
+    for (int i = 0; i < dimension; i++) {
+        next[i] = 0;
     }
 
-    // calculate index vector by sorting eigenvector
+    while (iterations < MAX_ITERATIONS) {
+
+        // multiply temp and starting 
+        multiplyMatrices(dimension, temp, starting, next);
+
+        // calculate the largest element of next, which is the largest eigenvalue
+        double largest = next[0];
+        for (int i = 1; i < dimension; i++) {
+            if (fabs(next[i]) > fabs(largest)) {
+                largest = next[i];
+            }
+        }
+
+        // normalize next to get the eigenvector
+        for (int i = 0; i < dimension; i++) {
+            next[i] = next[i] / largest;
+        }
+
+        // update starting to be the new eigenvector
+        memcpy(starting, next, dimension * sizeof(double));
+
+        iterations++;
+    }
+
+    // copy the eigenvector into the eigenvector array
+    memcpy(eigenvector, next, dimension * sizeof(double));
+
+    // calculate index vector by sorting eigenvector with indices
     for (int i = 0; i < dimension; i++) {
         index_vector[i] = i;
     }
     for (int i = 0; i < dimension - 1; i++) {
         for (int j = i + 1; j < dimension; j++) {
-            if (eigenvector[index_vector[i]] < eigenvector[index_vector[j]]) {
+            if (eigenvector[i] < eigenvector[j]) {
+                double temp_eigenvector = eigenvector[i];
+                eigenvector[i] = eigenvector[j];
+                eigenvector[j] = temp_eigenvector;
+
                 int temp_index = index_vector[i];
                 index_vector[i] = index_vector[j];
                 index_vector[j] = temp_index;
             }
         }
     }
+
+    // free dynamically allocated memory
+    free(starting);
+    free(next);
 }
 
+
+//I had to use a combination of my notes from CS2060 and this resource 
+//https://www.geeksforgeeks.org/dynamic-memory-allocation-in-c-using-malloc-calloc-free-and-realloc/
+//to be able to figure out how to do this part
+void multiplyMatrices(int dim, double mat1[], double mat2[], double answer[]) {
+
+    //should be a square matrix of size dim^2
+    double* A = (double*)malloc(dim * dim * sizeof(double));
+
+    //will be a matrix of dimx1
+    double* B = (double*)malloc(dim * sizeof(double));
+
+    //means the answer will be dimx1 as well
+    double* C = (double*)malloc(dim * sizeof(double));
+
+    //Copy mat1 and mat2 into A and B, respectively
+    memcpy(A, mat1, dim * dim * sizeof(double));
+    memcpy(B, mat2, dim * sizeof(double));
+
+    // Compute the product A * B = C
+    for (int i = 0; i < dim; i++) {
+        double sum = 0;
+        for (int j = 0; j < dim; j++) {
+            sum += A[i * dim + j] * B[j];
+        }
+        C[i] = sum;
+    }
+
+    //Copy the result back into the answer array
+    memcpy(answer, C, dim * sizeof(double));
+
+    //Free the memory
+    free(A);
+    free(B);
+    free(C);
+
+    //have to do the memory allocation with A,B, and C
+    //so that you don't cause issues with the arrays 
+    //that are actually being passed
+}
 
 //no negatives + columns/rows add to 1
 bool isStochastic(double temp[MAX], int rowcolumn) {

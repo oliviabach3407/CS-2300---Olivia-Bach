@@ -20,7 +20,9 @@ the plane and output K numbers for K lines on the input. Generate an output file
 #define THREE 3
 
 //input files -- you might need to change the names depending on what test files you're using 
+//I've edited my code so that the output file will be overwritten each time you run this program (same output file no matter what the input file is)
 const char FULL_FILE_PATH1[LENGTH_FILE_PATH] = "C:\\GithubRepos\\CS2060\\CS-2300---Olivia-Bach\\Program 4\\input_1.txt";
+//const char FULL_FILE_PATH1[LENGTH_FILE_PATH] = "C:\\GithubRepos\\CS2060\\CS-2300---Olivia-Bach\\Program 4\\input_2.txt";
 
 //output files -- this is where the output is being sent
 const char FILE_PATH[] = "C:\\GithubRepos\\CS2060\\CS-2300---Olivia-Bach\\Program 4\\";
@@ -36,6 +38,7 @@ void multiplyPointScalar(double point[THREE], double scalar, double total[THREE]
 void normalize(double point[THREE], double total[THREE]);
 double dotProduct(double point1[THREE], double point2[THREE]);
 void writeToFile(const char filePath[LENGTH_FILE_PATH], double answer);
+void overwrite(const char filePath[LENGTH_FILE_PATH], FILE* filePtr, const char path[LENGTH_FILE_PATH]);
 
 int main(void) {
 
@@ -47,8 +50,6 @@ int main(void) {
 
     //this one will have to call all the other functions inside it
     createDivideArray(temp);
-
-    //NEED TO DO FILES
 
     return 0;
 }
@@ -206,4 +207,18 @@ void writeToFile(const char filePath[LENGTH_FILE_PATH], double answer) {
     filePtr1 = fopen(fullFilePath1, "a");
 
     fprintf(filePtr1, "\n%.2lf", answer);
+}
+
+void overwrite(const char filePath[LENGTH_FILE_PATH], FILE* filePtr, const char path[LENGTH_FILE_PATH]) {
+
+    char fullFilePath1[LENGTH_FILE_PATH];
+
+    FILE* filePtr3;
+
+    sprintf(fullFilePath1, "%spart2-sub2", filePath);
+    filePtr3 = fopen(fullFilePath1, "w");
+
+    //simply opening the file so that I can overwrite the whole thing 
+
+    fclose(filePtr3);
 }
